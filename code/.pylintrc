@@ -1,0 +1,4 @@
+[MESSAGES CONTROL]
+
+disable=too-many-locals, redefined-outer-name, missing-module-docstring, invalid-name
+ignore-patterns=(.)*_test\.py,test_(.)*\.py

@@ -1,0 +1,43 @@
+name: Automated Tests
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on pull request events but only for the main branch
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+    - name: Cache Packages
+      id: cache-packages
+      uses: actions/cache@v3
+      with:
+        path: ${{ env.pythonLocation }}
+        key: ${{ env.pythonLocation }}-packages-${{ hashFiles('code/requirements.txt') }}
+
+    - name: Install dependencies
+      run: |
+        pip install pylint
+        pip install pytest
+        cd code
+        pip install -r requirements.txt
+    - name: Unit tests
+      run: |
+        cd code
+        pytest -v
+    - name: Analysing the code with pylint
+      run: |
+        cd code
+        pylint --rcfile=.pylintrc $(git ls-files '*.py')
