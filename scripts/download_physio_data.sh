@@ -1,12 +1,11 @@
 #!/bin/bash
 
 # SSH connection details
-remote_user="eduong"
 remote_host="gauss"
-data_location="/space/calebshibu/Neurips"
+data_location="/space/calebshibu/Neurips_new"
 data_output_dir="../data/raw/physio_data"
 
-# List of folders to sync
+# More details on folders to sync and SSH conection
 source ../.env
 
 # File extension to filter
@@ -14,7 +13,7 @@ file_extension="_filtered.csv"
 
 # Iterate through the list of folders
 for folder in "${FOLDERS[@]}"; do
-    source="$remote_user@$remote_host:$data_location/$folder"
+    source="$REMOTE_USER@$remote_host:$data_location/$folder"
     destination="$data_output_dir/$folder"
 
     mkdir -p "$destination"
