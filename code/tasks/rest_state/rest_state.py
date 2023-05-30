@@ -1,3 +1,5 @@
+import os
+
 import pandas as pd
 
 from utils import read_csv_file
@@ -78,3 +80,16 @@ class RestState:
                 'leopard': leopard_physio_nirs_df
             }
         )
+
+    def write_physio_data_csv(self, output_dir_path: str):
+        """
+        Write the physio data to a csv file in output directory
+        :param output_dir_path: output directory path
+        """
+        # Create the directory if it doesn't exist
+        if not os.path.exists(output_dir_path):
+            os.makedirs(output_dir_path)
+
+        for participant, physio_df in self.rest_state_physio.items():
+            physio_df.to_csv(output_dir_path + f'/{participant}_rest_state_physio_task.csv',
+                             index=False)
