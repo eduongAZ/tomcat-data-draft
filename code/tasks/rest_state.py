@@ -91,5 +91,9 @@ class RestState:
             os.makedirs(output_dir_path)
 
         for participant, physio_df in self.rest_state_physio.items():
-            physio_df.to_csv(output_dir_path + f'/{participant}_rest_state_physio_task.csv',
+            output_dir_participant = output_dir_path + f'/{participant}'
+            if not os.path.exists(output_dir_participant):
+                os.makedirs(output_dir_participant)
+
+            physio_df.to_csv(output_dir_participant + f'/{participant}_rest_state_physio_task.csv',
                              index=False)
