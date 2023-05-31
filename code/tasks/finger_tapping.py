@@ -21,7 +21,8 @@ def _combine_finger_tapping_physio_task(finger_tapping_task_df: pd.DataFrame,
                                                            unit='s')
     finger_tapping_task_df['time'] = pd.to_datetime(finger_tapping_task_df['time'], unit='s')
 
-    # Use merge_asof to merge the dataframes based on time
+    # Use merge_asof to merge the dataframes based on time, assigning the task data to the closest
+    # physio data entry that is before it.
     merged_df = pd.merge_asof(finger_tapping_physio_df, finger_tapping_task_df,
                               left_on='unix_time', right_on='time', direction='backward',
                               suffixes=('_physio_data', '_task_data'))
@@ -84,8 +85,7 @@ class FingerTapping:
                                                       delimiter='\t'),
         }
 
-        start_time = finger_tapping_task_df['time'].iloc[0]
-        end_time = finger_tapping_task_df['time'].iloc[-1]
+        c
 
         finger_tapping_physio = combine_participants_physio(
             finger_tapping_physio,
