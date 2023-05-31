@@ -85,7 +85,8 @@ class FingerTapping:
                                                       delimiter='\t'),
         }
 
-        c
+        start_time = finger_tapping_task_df['time'].iloc[0]
+        end_time = finger_tapping_task_df['time'].iloc[-1]
 
         finger_tapping_physio = combine_participants_physio(
             finger_tapping_physio,
