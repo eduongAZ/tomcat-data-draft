@@ -158,5 +158,5 @@ class PingPongCompetitive:
             os.makedirs(output_dir_path)
 
         for match, physio in self.ping_pong_matches_physio_task.items():
-            physio.to_csv(output_dir_path + f'/ping_pong_competitive_{match}_physio.csv',
+            physio.to_csv(output_dir_path + f'/ping_pong_competitive_{match}_physio_task.csv',
                           index=True)
