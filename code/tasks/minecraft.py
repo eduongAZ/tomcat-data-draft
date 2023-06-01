@@ -17,7 +17,7 @@ def _metadata_message_generator(metadata_file_path: str):
 def _read_metadata_file(metadata_file_path: str) -> pd.DataFrame:
     messages = _metadata_message_generator(metadata_file_path)
 
-    trial_topic = "trial"
+    mission_topic = "observations/events/mission"
     score_topic = "observations/events/scoreboard"
     trial_started = False
 
@@ -29,13 +29,15 @@ def _read_metadata_file(metadata_file_path: str) -> pd.DataFrame:
     # parse messages
     for message in messages:
         # parse trial message
-        if "topic" in message and message["topic"] == trial_topic:
-            if message["msg"]["sub_type"] == "start":
+        if "topic" in message and message["topic"] == mission_topic:
+            if message["data"]["mission_state"] == "Start":
                 trial_started = True
                 continue
             # end parsing after the trial has ended
-            else:
+            elif message["data"]["mission_state"] == "Stop":
                 break
+            else:
+                raise ValueError("Unknown mission state")
 
         # only start monitoring after trial has started
         elif not trial_started:
