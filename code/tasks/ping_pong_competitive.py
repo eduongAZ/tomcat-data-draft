@@ -2,7 +2,7 @@ import os
 
 import pandas as pd
 
-from physio import combine_participants_physio
+from physio import combine_participants_physio_from_files
 from utils import read_csv_file
 from utils import read_json_file
 
@@ -116,17 +116,18 @@ class PingPongCompetitive:
                 raise FileNotFoundError("Could not find ping pong task csv file")
             ping_pong_task_df = read_csv_file(ping_pong_csv_path, delimiter=';')
 
-            ping_pong_physio = {}
-            for name in ping_pong_names:
-                ping_pong_physio_csv_path = ping_pong_physio_directory + f'/{name}/NIRS_filtered_ping_pong_competitive.csv'
-                ping_pong_physio[participant_ids[name]] = read_csv_file(ping_pong_physio_csv_path,
-                                                                        delimiter='\t')
-
             start_time = ping_pong_task_df['time'].iloc[0]
             end_time = ping_pong_task_df['time'].iloc[-1]
 
-            ping_pong_physio = combine_participants_physio(
-                ping_pong_physio,
+            # Read ping pong physio data
+            physio_id_filepath = {}
+            for name in ping_pong_names:
+                ping_pong_physio_csv_name = f'/{name}_nirs_ping_pong_competetive_{match}.csv'
+                ping_pong_physio_csv_path = ping_pong_physio_directory + ping_pong_physio_csv_name
+                physio_id_filepath[participant_ids[name]] = ping_pong_physio_csv_path
+
+            ping_pong_physio = combine_participants_physio_from_files(
+                physio_id_filepath,
                 start_time,
                 end_time,
                 num_increments=num_increments
