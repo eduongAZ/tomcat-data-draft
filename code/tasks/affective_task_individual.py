@@ -4,13 +4,16 @@ from bisect import bisect_right
 import numpy as np
 import pandas as pd
 
+from physio import combine_participants_physio_from_files
+
 from utils import read_csv_file
 
 
 def _combine_affective_physio_task(affective_task_df: pd.DataFrame,
-                                   affective_physio_csv_path: str,
-                                   participant_id: str) -> pd.DataFrame:
-    affective_physio_df = read_csv_file(affective_physio_csv_path, delimiter='\t')
+                                   affective_physio_df: pd.DataFrame) -> pd.DataFrame:
+    # Reset the index
+    affective_physio_df = affective_physio_df.reset_index()
+    affective_task_df = affective_task_df.reset_index()
 
     # Save the original 'unix_time' column
     original_unix_time = affective_physio_df['unix_time'].copy()
@@ -45,7 +48,8 @@ def _combine_affective_physio_task(affective_task_df: pd.DataFrame,
     # Restore the original 'unix_time' column
     affective_physio_df['unix_time'] = original_unix_time
 
-    affective_physio_df = affective_physio_df.assign(physio_participant_id=participant_id)
+    # Set 'unix_time' back as the index
+    affective_physio_df = affective_physio_df.set_index('unix_time')
 
     return affective_physio_df
 
@@ -55,39 +59,57 @@ class AffectiveTaskIndividual:
                  participant_id: str,
                  participant_name: str,
                  affective_task_df: pd.DataFrame,
-                 affective_physio_df: pd.DataFrame):
+                 affective_physio_df: pd.DataFrame,
+                 affective_physio_task_df: pd.DataFrame):
         self.participant_id = participant_id
         self.participant_name = participant_name
         self.affective_task_df = affective_task_df
         self.affective_physio_df = affective_physio_df
+        self.affective_physio_task_df = affective_physio_task_df
 
     @classmethod
     def from_files(cls,
                    participant_id: str,
                    participant_name: str,
                    affective_task_csv_path: str,
-                   affective_physio_directory: str):
+                   affective_physio_path: str,
+                   num_increments: int = 511):
         """
         Create an AffectiveTask object from a metadata dictionary
         :param participant_id: id number of participant
         :param participant_name: name of participant computer (lion, tiger, leopard)
-        :param affective_physio_directory: affective task physio directory
+        :param affective_physio_path: affective task physio path
         :param affective_task_csv_path: affective task csv file path
+        :param num_increments: number of increments in the affective task
         :return: AffectiveTask object
         """
         # Read affective task data
         affective_task_df = read_csv_file(affective_task_csv_path, delimiter=';')
 
-        physio_df = _combine_affective_physio_task(
-            affective_task_df=affective_task_df,
-            affective_physio_csv_path=affective_physio_directory + '/NIRS_filtered_affective_task_individual.csv',
-            participant_id=participant_id)
+        start_time = affective_task_df['time'].iloc[0]
+        end_time = affective_task_df['time'].iloc[-1]
+
+        # Read finger tapping physio data
+        physio_id_filepath = {participant_id: affective_physio_path}
+
+        affective_individual_physio = combine_participants_physio_from_files(
+            physio_id_filepath,
+            start_time,
+            end_time,
+            num_increments
+        )
+
+        affective_individual_physio_task = _combine_affective_physio_task(
+            affective_task_df,
+            affective_individual_physio
+        )
 
         return cls(
             participant_id=participant_id,
             participant_name=participant_name,
             affective_task_df=affective_task_df,
-            affective_physio_df=physio_df
+            affective_physio_df=affective_individual_physio,
+            affective_physio_task_df=affective_individual_physio_task
         )
 
     def write_physio_data_csv(self, output_dir_path: str):
