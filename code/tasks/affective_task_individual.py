@@ -5,7 +5,6 @@ import numpy as np
 import pandas as pd
 
 from physio import combine_participants_physio_from_files
-
 from utils import read_csv_file
 
 
@@ -121,10 +120,6 @@ class AffectiveTaskIndividual:
         if not os.path.exists(output_dir_path):
             os.makedirs(output_dir_path)
 
-        output_dir_participant = output_dir_path + f'/{self.participant_name}'
-        if not os.path.exists(output_dir_participant):
-            os.makedirs(output_dir_participant)
-
         self.affective_physio_df.to_csv(
-            output_dir_participant + f'/{self.participant_name}_affective_individual_physio_task.csv',
+            output_dir_path + f'/{self.participant_name}_affective_individual_physio_task.csv',
             index=False)
