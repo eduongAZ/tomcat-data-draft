@@ -1,6 +1,7 @@
 from .affective_task_individual import AffectiveTaskIndividual
 from .affective_task_team import AffectiveTaskTeam
 from .finger_tapping import FingerTapping
+from .minecraft import Minecraft
 from .ping_pong_competitive import PingPongCompetitive
 from .ping_pong_cooperative import PingPongCooperative
 from .rest_state import RestState
@@ -11,5 +12,6 @@ __all__ = [
     "AffectiveTaskIndividual",
     "AffectiveTaskTeam",
     "PingPongCompetitive",
-    "PingPongCooperative"
+    "PingPongCooperative",
+    "Minecraft"
 ]
