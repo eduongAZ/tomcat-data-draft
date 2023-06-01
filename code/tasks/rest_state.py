@@ -54,11 +54,12 @@ class RestState:
         # Read rest state task data
         rest_state_task_df = read_csv_file(rest_state_csv_path, delimiter=';')
 
-        physio_id_filepath = {v: rest_state_physio_name_filepath[k] for k, v in
-                              participant_ids.items() if k in rest_state_physio_name_filepath}
-
         start_time = rest_state_task_df.query('event_type == "start_rest_state"').iloc[0]['time']
         end_time = rest_state_task_df.query('event_type == "end_rest_state"').iloc[0]['time']
+
+        # Read rest state physio data
+        physio_id_filepath = {v: rest_state_physio_name_filepath[k] for k, v in
+                              participant_ids.items() if k in rest_state_physio_name_filepath}
 
         rest_state_physio = combine_participants_physio_from_files(
             physio_id_filepath,
