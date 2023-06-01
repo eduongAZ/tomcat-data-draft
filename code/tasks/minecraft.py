@@ -4,8 +4,7 @@ from datetime import datetime
 
 import pandas as pd
 
-from physio import combine_participants_physio
-from utils import read_csv_file
+from physio import combine_participants_physio_from_files
 from utils import read_json_file
 
 
@@ -103,14 +102,12 @@ class Minecraft:
     def from_files(cls,
                    metadata_path: str,
                    minecraft_metadata_path: str,
-                   minecraft_physio_name: str,
-                   minecraft_physio_directory: str,
+                   minecraft_physio_name_filepath: dict[str, str],
                    num_increments: int = 5780):
         """
         Create a FingerTapping object from a metadata dictionary
         :param num_increments: number of time series increments
-        :param minecraft_physio_directory: minecraft physio directory
-        :param minecraft_physio_name: minecraft physio file name
+        :param minecraft_physio_name_filepath: minecraft physio name-filepath mapping
         :param minecraft_metadata_path: minecraft metadata file path
         :param metadata_path: json file metadata path
         :return: FingerTapping object
@@ -122,27 +119,18 @@ class Minecraft:
         # Read finger tapping task data
         minecraft_task_df = _read_metadata_file(minecraft_metadata_path)
 
-        lion_minecraft_physio_csv_path = minecraft_physio_directory + '/lion/' + minecraft_physio_name
-        tiger_minecraft_physio_csv_path = minecraft_physio_directory + '/tiger/' + minecraft_physio_name
-        leopard_minecraft_physio_csv_path = minecraft_physio_directory + '/leopard/' + minecraft_physio_name
-
-        minecraft_physio = {
-            participant_ids['lion']: read_csv_file(lion_minecraft_physio_csv_path,
-                                                   delimiter='\t'),
-            participant_ids['tiger']: read_csv_file(tiger_minecraft_physio_csv_path,
-                                                    delimiter='\t'),
-            participant_ids['leopard']: read_csv_file(leopard_minecraft_physio_csv_path,
-                                                      delimiter='\t'),
-        }
-
         start_time = minecraft_task_df['time'].iloc[0]
         end_time = minecraft_task_df['time'].iloc[-1]
 
-        minecraft_physio = combine_participants_physio(
-            minecraft_physio,
+        # Read physio data
+        physio_id_filepath = {v: minecraft_physio_name_filepath[k] for k, v in
+                              participant_ids.items() if k in minecraft_physio_name_filepath}
+
+        minecraft_physio = combine_participants_physio_from_files(
+            physio_id_filepath,
             start_time,
             end_time,
-            num_increments=num_increments
+            num_increments
         )
 
         minecraft_physio_task = _combine_minecraft_physio_task(
