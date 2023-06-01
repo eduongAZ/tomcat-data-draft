@@ -12,7 +12,7 @@ def _sync_data_to_time_series(df: pd.DataFrame, time_series: list[float]) -> pd.
     :return: physio data synchronized to time series
     """
     # Define the columns for the new dataframe
-    columns = df.columns.drop(['Unnamed: 0', 'human_readable_time', 'unix_time', 'event_type'])
+    columns = df.columns.drop(['line', 'human_readable_time', 'unix_time', 'event_type'])
     synced_df = pd.DataFrame(columns=columns, index=time_series)
 
     df_start_time = df['unix_time'].min()  # Get the start time in the df

@@ -2,9 +2,8 @@ import os
 
 import pandas as pd
 
-from physio import combine_participants_physio
-from utils import read_csv_file
-from utils import read_json_file
+from physio import combine_participants_physio_from_files
+from utils import read_csv_file, read_json_file
 
 
 def _combine_rest_state_physio_task(rest_state_task_df: pd.DataFrame,
@@ -38,12 +37,12 @@ class RestState:
     def from_files(cls,
                    metadata_path: str,
                    rest_state_csv_path: str,
-                   rest_state_physio_directory: str,
+                   rest_state_physio_name_filepath: dict[str, str],
                    num_increments: int = 3069):
         """
         Create a RestState object from a metadata dictionary
         :param num_increments: number of time series increments
-        :param rest_state_physio_directory: rest state physio directory
+        :param rest_state_physio_name_filepath: rest state physio name-filepath mapping
         :param rest_state_csv_path: rest state csv file path
         :param metadata_path: json file metadata path
         :return: RestState object
@@ -55,26 +54,17 @@ class RestState:
         # Read rest state task data
         rest_state_task_df = read_csv_file(rest_state_csv_path, delimiter=';')
 
-        lion_rest_state_physio_csv_path = rest_state_physio_directory + '/lion/NIRS_filtered_rest_state.csv'
-        tiger_rest_state_physio_csv_path = rest_state_physio_directory + '/tiger/NIRS_filtered_rest_state.csv'
-        leopard_rest_state_physio_csv_path = rest_state_physio_directory + '/leopard/NIRS_filtered_rest_state.csv'
-
-        rest_state_physio = {
-            participant_ids['lion']: read_csv_file(lion_rest_state_physio_csv_path, delimiter='\t'),
-            participant_ids['tiger']: read_csv_file(tiger_rest_state_physio_csv_path,
-                                                    delimiter='\t'),
-            participant_ids['leopard']: read_csv_file(leopard_rest_state_physio_csv_path,
-                                                      delimiter='\t'),
-        }
+        physio_id_filepath = {v: rest_state_physio_name_filepath[k] for k, v in
+                              participant_ids.items() if k in rest_state_physio_name_filepath}
 
         start_time = rest_state_task_df.query('event_type == "start_rest_state"').iloc[0]['time']
         end_time = rest_state_task_df.query('event_type == "end_rest_state"').iloc[0]['time']
 
-        rest_state_physio = combine_participants_physio(
-            rest_state_physio,
+        rest_state_physio = combine_participants_physio_from_files(
+            physio_id_filepath,
             start_time,
             end_time,
-            num_increments=num_increments
+            num_increments
         )
 
         rest_state_physio_task = _combine_rest_state_physio_task(
