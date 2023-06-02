@@ -2,7 +2,7 @@ import os
 
 import pandas as pd
 
-from physio import combine_participants_physio
+from physio import combine_participants_physio_from_files
 from utils import read_csv_file
 from utils import read_json_file
 
@@ -42,26 +42,26 @@ def _combine_ping_pong_physio_task(ping_pong_task_df: pd.DataFrame,
 class PingPongCompetitive:
     def __init__(self,
                  participant_ids: dict,
-                 ping_pong_matches_task: dict[str, pd.DataFrame],
-                 ping_pong_matches_physio: dict[str, pd.DataFrame],
-                 ping_pong_matches_physio_task: dict[str, pd.DataFrame]
+                 ping_pong_tasks: pd.DataFrame,
+                 ping_pong_physio: pd.DataFrame,
+                 ping_pong_physio_task: pd.DataFrame
                  ):
         self.participant_ids = participant_ids
-        self.ping_pong_matches_task = ping_pong_matches_task
-        self.ping_pong_matches_physio = ping_pong_matches_physio
-        self.ping_pong_matches_physio_task = ping_pong_matches_physio_task
+        self.ping_pong_matches_task = ping_pong_tasks
+        self.ping_pong_physio = ping_pong_physio
+        self.ping_pong_physio_task = ping_pong_physio_task
 
     @classmethod
     def from_files(cls,
                    metadata_path: str,
-                   ping_pong_task_directory: str,
-                   ping_pong_physio_directory: str,
+                   ping_pong_task_csv_path: str,
+                   ping_pong_physio_name_filepath: dict[str, str],
                    num_increments: int = 1324):
         """
         Create a PingPongCompetitive object from a metadata dictionary
         :param num_increments: number of time series increments
-        :param ping_pong_physio_directory: ping pong competitive physio directory
-        :param ping_pong_task_directory: ping pong competitive task directory
+        :param ping_pong_physio_name_filepath: ping pong competitive physio name-filepath mapping
+        :param ping_pong_task_csv_path: ping pong competitive task path
         :param metadata_path: json file metadata path
         :return: PingPongCompetitive object
         """
@@ -69,94 +69,44 @@ class PingPongCompetitive:
         metadata = read_json_file(metadata_path)
         participant_ids = metadata['participant_ids']
 
-        # Find the ping pong task csv file for match 0
-        for filename in os.listdir(ping_pong_task_directory):
-            if filename.startswith("competitive_0_") and filename.endswith("metadata.json"):
-                ping_pong_0_csv_path = ping_pong_task_directory + '/' + filename
-                break
-        else:
-            raise FileNotFoundError("Could not find ping pong task csv file")
-        ping_pong_0_metadata = read_json_file(ping_pong_0_csv_path)
-        ping_pong_0_participant_ids = [ping_pong_0_metadata["left_team"][0],
-                                       ping_pong_0_metadata["right_team"][0]]
+        ping_pong_task_df = read_csv_file(ping_pong_task_csv_path, delimiter=';')
 
-        # Find the ping pong task csv file for match 1
-        for filename in os.listdir(ping_pong_task_directory):
-            if filename.startswith("competitive_1_") and filename.endswith("metadata.json"):
-                ping_pong_1_csv_path = ping_pong_task_directory + '/' + filename
-                break
-        else:
-            raise FileNotFoundError("Could not find ping pong task csv file")
-        ping_pong_1_metadata = read_json_file(ping_pong_1_csv_path)
-        ping_pong_1_participant_ids = [ping_pong_1_metadata["left_team"][0],
-                                       ping_pong_1_metadata["right_team"][0]]
-        ping_pong_1_participant_ids = list(
-            filter(lambda item: "exp" not in item, ping_pong_1_participant_ids))
+        start_time = ping_pong_task_df['time'].iloc[0]
+        end_time = ping_pong_task_df['time'].iloc[-1]
 
-        # Get the names of the participants in each ping pong match
-        ping_pong_0_names = [name for name, id_ in participant_ids.items() if
-                             id_ in ping_pong_0_participant_ids]
-        ping_pong_1_names = [name for name, id_ in participant_ids.items() if
-                             id_ in ping_pong_1_participant_ids]
-        ping_pong_match_names = {
-            "0": ping_pong_0_names,
-            "1": ping_pong_1_names
-        }
+        # Read finger tapping physio data
+        physio_id_filepath = {v: ping_pong_physio_name_filepath[k] for k, v in
+                              participant_ids.items() if k in ping_pong_physio_name_filepath}
 
-        ping_pong_matches_task = {}
-        ping_pong_matches_physio = {}
-        ping_pong_matches_physio_task = {}
-        for match, ping_pong_names in ping_pong_match_names.items():
-            # Read ping pong task data
-            for filename in os.listdir(ping_pong_task_directory):
-                if filename.startswith(f"competitive_{match}_") and filename.endswith(".csv"):
-                    ping_pong_csv_path = ping_pong_task_directory + '/' + filename
-                    break
-            else:
-                raise FileNotFoundError("Could not find ping pong task csv file")
-            ping_pong_task_df = read_csv_file(ping_pong_csv_path, delimiter=';')
+        ping_pong_physio = combine_participants_physio_from_files(
+            physio_id_filepath,
+            start_time,
+            end_time,
+            num_increments
+        )
 
-            ping_pong_physio = {}
-            for name in ping_pong_names:
-                ping_pong_physio_csv_path = ping_pong_physio_directory + f'/{name}/NIRS_filtered_ping_pong_competitive.csv'
-                ping_pong_physio[participant_ids[name]] = read_csv_file(ping_pong_physio_csv_path,
-                                                                        delimiter='\t')
-
-            start_time = ping_pong_task_df['time'].iloc[0]
-            end_time = ping_pong_task_df['time'].iloc[-1]
-
-            ping_pong_physio = combine_participants_physio(
-                ping_pong_physio,
-                start_time,
-                end_time,
-                num_increments=num_increments
-            )
-
-            ping_pong_physio_task = _combine_ping_pong_physio_task(
-                ping_pong_task_df,
-                ping_pong_physio
-            )
-
-            ping_pong_matches_task[match] = ping_pong_task_df
-            ping_pong_matches_physio[match] = ping_pong_physio
-            ping_pong_matches_physio_task[match] = ping_pong_physio_task
+        ping_pong_physio_task = _combine_ping_pong_physio_task(
+            ping_pong_task_df,
+            ping_pong_physio
+        )
 
         return cls(
             participant_ids=participant_ids,
-            ping_pong_matches_task=ping_pong_matches_task,
-            ping_pong_matches_physio=ping_pong_matches_physio,
-            ping_pong_matches_physio_task=ping_pong_matches_physio_task
+            ping_pong_tasks=ping_pong_task_df,
+            ping_pong_physio=ping_pong_physio,
+            ping_pong_physio_task=ping_pong_physio_task
         )
 
-    def write_physio_data_csv(self, output_dir_path: str):
+    def write_physio_data_csv(self, output_dir_path: str, match: int):
         """
         Write the physio data to a csv file in output directory
+        :param match: ping pong competitive match id
         :param output_dir_path: output directory path
         """
         # Create the directory if it doesn't exist
         if not os.path.exists(output_dir_path):
             os.makedirs(output_dir_path)
 
-        for match, physio in self.ping_pong_matches_physio_task.items():
-            physio.to_csv(output_dir_path + f'/ping_pong_competitive_{match}_physio_task.csv',
-                          index=True)
+        self.ping_pong_physio_task.to_csv(
+            output_dir_path + f'/ping_pong_competitive_{match}_physio_task.csv',
+            index=True)

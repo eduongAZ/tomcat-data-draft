@@ -2,7 +2,7 @@ import os
 
 import pandas as pd
 
-from physio import combine_participants_physio
+from physio import combine_participants_physio_from_files
 from utils import read_csv_file
 from utils import read_json_file
 
@@ -11,7 +11,6 @@ def _combine_ping_pong_physio_task(ping_pong_task_df: pd.DataFrame,
                                    ping_pong_physio_df: pd.DataFrame) -> pd.DataFrame:
     # Reset the index
     ping_pong_physio_df = ping_pong_physio_df.reset_index()
-    ping_pong_task_df = ping_pong_task_df.reset_index()
 
     # Save the original 'unix_time' column
     original_unix_time = ping_pong_physio_df['unix_time'].copy()
@@ -36,6 +35,9 @@ def _combine_ping_pong_physio_task(ping_pong_task_df: pd.DataFrame,
     # Set 'unix_time' back as the index
     merged_df = merged_df.set_index('unix_time')
 
+    # Drop columns
+    merged_df = merged_df.drop(columns=['monotonic_time', 'human_readable_time'])
+
     return merged_df
 
 
@@ -55,12 +57,12 @@ class PingPongCooperative:
     def from_files(cls,
                    metadata_path: str,
                    ping_pong_csv_path: str,
-                   ping_pong_physio_directory: str,
+                   ping_pong_physio_name_filepath: dict[str, str],
                    num_increments: int = 1324):
         """
         Create a PingPongCooperative object from a metadata dictionary
         :param num_increments: number of time series increments
-        :param ping_pong_physio_directory: ping pong physio directory
+        :param ping_pong_physio_name_filepath: ping pong physio directory name-filepath mapping
         :param ping_pong_csv_path: ping pong csv file path
         :param metadata_path: json file metadata path
         :return: PingPongCooperative object
@@ -72,27 +74,18 @@ class PingPongCooperative:
         # Read ping pong task data
         ping_pong_task_df = read_csv_file(ping_pong_csv_path, delimiter=';')
 
-        lion_ping_pong_physio_csv_path = ping_pong_physio_directory + '/lion/NIRS_filtered_ping_pong_cooperative.csv'
-        tiger_ping_pong_physio_csv_path = ping_pong_physio_directory + '/tiger/NIRS_filtered_ping_pong_cooperative.csv'
-        leopard_ping_pong_physio_csv_path = ping_pong_physio_directory + '/leopard/NIRS_filtered_ping_pong_cooperative.csv'
-
-        ping_pong_physio = {
-            participant_ids['lion']: read_csv_file(lion_ping_pong_physio_csv_path,
-                                                   delimiter='\t'),
-            participant_ids['tiger']: read_csv_file(tiger_ping_pong_physio_csv_path,
-                                                    delimiter='\t'),
-            participant_ids['leopard']: read_csv_file(leopard_ping_pong_physio_csv_path,
-                                                      delimiter='\t'),
-        }
-
         start_time = ping_pong_task_df['time'].iloc[0]
         end_time = ping_pong_task_df['time'].iloc[-1]
 
-        ping_pong_physio = combine_participants_physio(
-            ping_pong_physio,
+        # Read physio data
+        physio_id_filepath = {v: ping_pong_physio_name_filepath[k] for k, v in
+                              participant_ids.items() if k in ping_pong_physio_name_filepath}
+
+        ping_pong_physio = combine_participants_physio_from_files(
+            physio_id_filepath,
             start_time,
             end_time,
-            num_increments=num_increments
+            num_increments
         )
 
         ping_pong_physio_task = _combine_ping_pong_physio_task(
