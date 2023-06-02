@@ -19,6 +19,8 @@ def prepare_finger_tapping(path_to_task: str,
     files_in_directory = os.listdir(task_csv_path)
     # Filter out directories, leave only files
     only_files = [f for f in files_in_directory if os.path.isfile(os.path.join(task_csv_path, f))]
+    # Filter to select only files with 'csv' in their names
+    only_files = [f for f in only_files if 'csv' in f]
     # We assume there's only one file in the directory
     task_csv_file = only_files[0]
     output['task_csv_path'] = os.path.join(task_csv_path, task_csv_file)

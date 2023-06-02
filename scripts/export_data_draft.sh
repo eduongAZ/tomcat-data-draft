@@ -3,7 +3,7 @@
 # SSH connection details
 remote_host="gauss"
 data_location="/Users/ericduong/Documents/ToMCAT/tomcat-data-draft/data/processed"
-data_output_dir="/tomcat/data/derived/drafts/draft_2023_06_02_12"
+data_output_dir="/tomcat/data/derived/drafts/draft_2023_06_02_14"
 
 # More details on folders to sync and SSH conection
 source ../.env

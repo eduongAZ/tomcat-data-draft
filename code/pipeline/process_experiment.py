@@ -14,13 +14,11 @@ def process_experiment(path_to_task: str,
                        experiments: list[str],
                        output_path: str):
     for experiment in experiments:
+        # Create the directories if they don't exist
+        os.makedirs(os.path.join(output_path, experiment), exist_ok=True)
+
         log_file = open(os.path.join(output_path, experiment, 'README.md'), "a")
-        log_file.write(f"""
-        # Experiment: {experiment}
-        
-        Output of the program:
-        ```
-        """)
+        log_file.write(f"# Experiment: {experiment}\n\nOutput of the program:\n\n```")
 
         log_file.write("[Processing] " + experiment + '\n')
         # Rest state

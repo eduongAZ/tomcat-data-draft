@@ -1,6 +1,9 @@
 import json
 import os
 from typing import TextIO
+from datetime import datetime
+from dateutil.parser import parse
+
 
 from .utils import check_file_exists
 
@@ -26,6 +29,21 @@ def _get_mission_type(metadata_file_path: str) -> str:
     return ""
 
 
+def _get_trial_time(metadata_file_path: str) -> str:
+    messages = _metadata_message_generator(metadata_file_path)
+
+    trial_topic = "trial"
+
+    # parse messages
+    for message in messages:
+        # Find trial message
+        if "topic" in message and message["topic"] == trial_topic and message["msg"][
+            "sub_type"] == "start":
+            return message["header"]["timestamp"]
+
+    return ""
+
+
 def _is_saturn_a(metadata_file_path: str) -> bool:
     mission_type = _get_mission_type(metadata_file_path)
     return mission_type == "Saturn_A"
@@ -38,13 +56,30 @@ def _is_saturn_b(metadata_file_path: str) -> bool:
 
 def _identify_missions(path_to_minecraft: str) -> dict[str, str]:
     output = {}
+    saturn_a_start_time = None
+    saturn_b_start_time = None
+
     for mission in os.listdir(path_to_minecraft):
         if mission.endswith("metadata"):
             mission_path = os.path.join(path_to_minecraft, mission)
             if _is_saturn_a(mission_path):
-                output["saturn_a"] = mission_path
+                if saturn_a_start_time is None:
+                    saturn_a_start_time = parse(_get_trial_time(mission_path))
+                    output["saturn_a"] = mission_path
+                else:
+                    new_saturn_a_start_time = parse(_get_trial_time(mission_path))
+                    if new_saturn_a_start_time > saturn_a_start_time:
+                        saturn_a_start_time = new_saturn_a_start_time
+                        output["saturn_a"] = mission_path
             elif _is_saturn_b(mission_path):
-                output["saturn_b"] = mission_path
+                if saturn_b_start_time is None:
+                    saturn_b_start_time = parse(_get_trial_time(mission_path))
+                    output["saturn_b"] = mission_path
+                else:
+                    new_saturn_b_start_time = parse(_get_trial_time(mission_path))
+                    if new_saturn_b_start_time > saturn_b_start_time:
+                        saturn_b_start_time = new_saturn_b_start_time
+                        output["saturn_b"] = mission_path
 
     return output
 
@@ -85,20 +120,17 @@ def prepare_minecraft(path_to_task: str,
 
         # Add the physio data
         physio_data = {}
-        should_skip = False
         for animal in ["lion", "tiger", "leopard"]:
-            physio_data[animal] = os.path.join(path_to_physio, experiment,
-                                               f"{animal}_{physio_type}_{mission}.csv")
-            if not check_file_exists(physio_data[animal]):
+            physio_file_path = os.path.join(path_to_physio, experiment,
+                                            f"{animal}_{physio_type}_{mission}.csv")
+            if not check_file_exists(physio_file_path):
                 if output_file is not None:
-                    output_file.write("Cannot find " + physio_data[animal] + "\n")
+                    output_file.write("Cannot find " + physio_file_path + "\n")
                 else:
-                    print("Cannot find " + physio_data[animal])
-                should_skip = True
-                break
+                    print("Cannot find " + physio_file_path)
+                continue
 
-        if should_skip:
-            continue
+            physio_data[animal] = physio_file_path
 
         mission_dict["physio_name_path"] = physio_data
 
