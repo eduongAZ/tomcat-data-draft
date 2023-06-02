@@ -1,6 +1,7 @@
 import glob
 import json
 import os
+from typing import TextIO
 
 from .utils import check_file_exists, FileDoesNotExistError
 
@@ -9,7 +10,8 @@ def prepare_ping_pong_competitive(path_to_task: str,
                                   path_to_physio: str,
                                   path_to_experiment_info: str,
                                   experiment: str,
-                                  physio_type: str = "nirs") -> dict:
+                                  physio_type: str = "nirs",
+                                  output_file: TextIO | None = None) -> dict:
     experiment_dict = {}
 
     info_path = os.path.join(path_to_experiment_info, experiment + '_info.json')
@@ -29,7 +31,10 @@ def prepare_ping_pong_competitive(path_to_task: str,
 
     for task in competitive_tasks:
         if not check_file_exists(task):
-            print("Cannot find " + task)
+            if output_file:
+                output_file.write("Cannot find " + task + "\n")
+            else:
+                print("Cannot find " + task)
             continue
 
         # extracting match number
@@ -59,17 +64,26 @@ def prepare_ping_pong_competitive(path_to_task: str,
                 )
                 matching_physio_files = glob.glob(matching_physio_path)
                 if len(matching_physio_files) == 0:
-                    print("Cannot find " + matching_physio_path)
+                    if output_file:
+                        output_file.write("Cannot find " + matching_physio_path + "\n")
+                    else:
+                        print("Cannot find " + matching_physio_path)
                     continue
                 physio_file = matching_physio_files[0]
                 if not check_file_exists(physio_file):
-                    print("Cannot find " + physio_file)
+                    if output_file:
+                        output_file.write("Cannot find " + physio_file + "\n")
+                    else:
+                        print("Cannot find " + physio_file)
                     continue
 
                 physio_paths[participant_name] = physio_file
 
         if not physio_paths:
-            print("No physio data found for " + match_num)
+            if output_file:
+                output_file.write("No physio data found for " + match_num + "\n")
+            else:
+                print("No physio data found for " + match_num)
 
         experiment_dict[match_num] = {
             "info": info_path,

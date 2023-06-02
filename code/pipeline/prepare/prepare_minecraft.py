@@ -1,5 +1,6 @@
 import json
 import os
+from typing import TextIO
 
 from .utils import check_file_exists
 
@@ -52,7 +53,8 @@ def prepare_minecraft(path_to_task: str,
                       path_to_physio: str,
                       path_to_experiment_info: str,
                       experiment: str,
-                      physio_type: str = "nirs") -> dict:
+                      physio_type: str = "nirs",
+                      output_file: TextIO | None = None) -> dict:
     output = {}
 
     # Identify the minecraft missions
@@ -66,13 +68,19 @@ def prepare_minecraft(path_to_task: str,
         # Add the info file
         mission_dict["info"] = os.path.join(path_to_experiment_info, f"{experiment}_info.json")
         if not check_file_exists(mission_dict["info"]):
-            print("Cannot find " + mission_dict["info"])
+            if output_file is not None:
+                output_file.write("Cannot find " + mission_dict["info"] + "\n")
+            else:
+                print("Cannot find " + mission_dict["info"])
             continue
 
         # Add the path to the task metadata
         mission_dict["task_metadata_path"] = path_to_metadata
         if not check_file_exists(path_to_metadata):
-            print("Cannot find " + mission_dict["task_metadata_path"])
+            if output_file is not None:
+                output_file.write("Cannot find " + mission_dict["task_metadata_path"] + "\n")
+            else:
+                print("Cannot find " + mission_dict["task_metadata_path"])
             continue
 
         # Add the physio data
@@ -82,7 +90,10 @@ def prepare_minecraft(path_to_task: str,
             physio_data[animal] = os.path.join(path_to_physio, experiment,
                                                f"{animal}_{physio_type}_{mission}.csv")
             if not check_file_exists(physio_data[animal]):
-                print("Cannot find " + physio_data[animal])
+                if output_file is not None:
+                    output_file.write("Cannot find " + physio_data[animal] + "\n")
+                else:
+                    print("Cannot find " + physio_data[animal])
                 should_skip = True
                 break
 

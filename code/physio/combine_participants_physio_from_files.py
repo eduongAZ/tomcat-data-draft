@@ -14,13 +14,13 @@ def combine_participants_physio_from_files(
 
     for participant_id, filepath in id_filepath.items():
         # Read file
-        id_df[participant_id] = read_csv_file(filepath, delimiter=',')
+        id_df[participant_id] = read_csv_file(filepath, delimiter='\t')
 
-        # Extract the prefix from the file name
-        prefix = '_'.join(os.path.basename(filepath).split('_')[0:2]) + "_"
-
-        # Rename the columns by removing the prefix
-        id_df[participant_id].columns = id_df[participant_id].columns.str.replace(prefix, '')
+        # # Extract the prefix from the file name
+        # prefix = '_'.join(os.path.basename(filepath).split('_')[0:2]) + "_"
+        #
+        # # Rename the columns by removing the prefix
+        # id_df[participant_id].columns = id_df[participant_id].columns.str.replace(prefix, '')
 
     return combine_participants_physio(
         id_df,

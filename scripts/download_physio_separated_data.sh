@@ -2,7 +2,7 @@
 
 # SSH connection details
 remote_host="gauss"
-data_location="/space/rchamplin/Neurips"
+data_location="/space/rchamplin/Neurips/rerun_2023_06_02"
 data_output_dir="../data/separated/physio_data"
 
 # More details on folders to sync and SSH conection
