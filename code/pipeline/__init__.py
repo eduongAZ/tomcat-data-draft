@@ -4,7 +4,8 @@ from .prepare import \
     prepare_affective_task_individual, \
     prepare_affective_task_team, \
     prepare_ping_pong_competitive, \
-    prepare_ping_pong_cooperative
+    prepare_ping_pong_cooperative, \
+    prepare_minecraft
 
 __all__ = [
     'prepare_rest_state',
@@ -12,5 +13,6 @@ __all__ = [
     'prepare_affective_task_individual',
     'prepare_affective_task_team',
     'prepare_ping_pong_competitive',
-    'prepare_ping_pong_cooperative'
+    'prepare_ping_pong_cooperative',
+    'prepare_minecraft'
 ]
