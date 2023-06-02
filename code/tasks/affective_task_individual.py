@@ -120,6 +120,6 @@ class AffectiveTaskIndividual:
         if not os.path.exists(output_dir_path):
             os.makedirs(output_dir_path)
 
-        self.affective_physio_df.to_csv(
+        self.affective_physio_task_df.to_csv(
             output_dir_path + f'/{self.participant_name}_affective_individual_physio_task.csv',
-            index=False)
+            index=True)
