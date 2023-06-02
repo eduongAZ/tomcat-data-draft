@@ -5,6 +5,7 @@ from .prepare_minecraft import prepare_minecraft
 from .prepare_ping_pong_competitive import prepare_ping_pong_competitive
 from .prepare_ping_pong_cooperative import prepare_ping_pong_cooperative
 from .prepare_rest_state import prepare_rest_state
+from .utils import FileDoesNotExistError
 
 __all__ = [
     'prepare_rest_state',
@@ -13,5 +14,6 @@ __all__ = [
     'prepare_affective_task_team',
     'prepare_ping_pong_competitive',
     'prepare_ping_pong_cooperative',
-    'prepare_minecraft'
+    'prepare_minecraft',
+    'FileDoesNotExistError'
 ]

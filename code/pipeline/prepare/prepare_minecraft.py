@@ -1,6 +1,8 @@
 import json
 import os
 
+from .utils import check_file_exists
+
 
 def _metadata_message_generator(metadata_file_path: str):
     with open(metadata_file_path, 'r') as metadata_file:
@@ -63,15 +65,30 @@ def prepare_minecraft(path_to_task: str,
 
         # Add the info file
         mission_dict["info"] = os.path.join(path_to_experiment_info, f"{experiment}_info.json")
+        if not check_file_exists(mission_dict["info"]):
+            print("Cannot find " + mission_dict["info"])
+            continue
 
         # Add the path to the task metadata
         mission_dict["task_metadata_path"] = path_to_metadata
+        if not check_file_exists(path_to_metadata):
+            print("Cannot find " + mission_dict["task_metadata_path"])
+            continue
 
         # Add the physio data
         physio_data = {}
+        should_skip = False
         for animal in ["lion", "tiger", "leopard"]:
             physio_data[animal] = os.path.join(path_to_physio, experiment,
                                                f"{animal}_{physio_type}_{mission}.csv")
+            if not check_file_exists(physio_data[animal]):
+                print("Cannot find " + physio_data[animal])
+                should_skip = True
+                break
+
+        if should_skip:
+            continue
+
         mission_dict["physio_name_path"] = physio_data
 
         # Add the current mission to the output dictionary

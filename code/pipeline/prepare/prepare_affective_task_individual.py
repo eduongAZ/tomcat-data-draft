@@ -1,6 +1,8 @@
 import glob
 import json
 
+from .utils import check_file_exists, FileDoesNotExistError
+
 
 def prepare_affective_task_individual(path_to_task: str,
                                       path_to_physio: str,
@@ -8,6 +10,9 @@ def prepare_affective_task_individual(path_to_task: str,
                                       experiment: str,
                                       physio_type: str = "nirs") -> dict:
     info_path = f"{path_to_experiment_info}/{experiment}_info.json"
+    if not check_file_exists(info_path):
+        raise FileDoesNotExistError(info_path)
+
     with open(info_path, 'r') as f:
         participant_info = json.load(f)["participant_ids"]
 
@@ -19,6 +24,9 @@ def prepare_affective_task_individual(path_to_task: str,
 
         # Get the first match
         task_csv_path = csv_files[0] if csv_files else None
+        if not check_file_exists(task_csv_path):
+            print("Cannot find " + task_csv_path)
+            continue
 
         participant_dict = {
             "info": info_path,
@@ -27,6 +35,10 @@ def prepare_affective_task_individual(path_to_task: str,
             "task_csv_path": task_csv_path,
             "physio_csv_path": f"{path_to_physio}/{experiment}/{computer_name}_{physio_type}_affective_task_individual.csv"
         }
+        if not check_file_exists(participant_dict["physio_csv_path"]):
+            print("Cannot find " + participant_dict["physio_csv_path"])
+            continue
+
         output[computer_name] = participant_dict
 
     return output

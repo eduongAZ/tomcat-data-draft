@@ -60,6 +60,10 @@ def combine_participants_physio(
     # Generate time series
     time_series = generate_time_series(start_time, end_time, num_increments)
 
+    # If physio_df is empty, return combined_df with unix_time as index
+    if not physio_df:
+        return pd.DataFrame(index=time_series).rename_axis('unix_time')
+
     combined_df = None
 
     for participant_id, df in physio_df.items():
