@@ -11,7 +11,6 @@ def _combine_ping_pong_physio_task(ping_pong_task_df: pd.DataFrame,
                                    ping_pong_physio_df: pd.DataFrame) -> pd.DataFrame:
     # Reset the index
     ping_pong_physio_df = ping_pong_physio_df.reset_index()
-    ping_pong_task_df = ping_pong_task_df.reset_index()
 
     # Save the original 'unix_time' column
     original_unix_time = ping_pong_physio_df['unix_time'].copy()
@@ -35,6 +34,9 @@ def _combine_ping_pong_physio_task(ping_pong_task_df: pd.DataFrame,
 
     # Set 'unix_time' back as the index
     merged_df = merged_df.set_index('unix_time')
+
+    # Drop columns
+    merged_df = merged_df.drop(columns=['monotonic_time', 'human_readable_time'])
 
     return merged_df
 
