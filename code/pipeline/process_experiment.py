@@ -18,18 +18,19 @@ def process_experiment(path_to_task: str,
         os.makedirs(os.path.join(output_path, experiment), exist_ok=True)
 
         log_file = open(os.path.join(output_path, experiment, 'README.md'), "a")
-        log_file.write(f"# Experiment: {experiment}\n\nOutput of the program:\n\n```")
+        log_file.write(f"# Experiment: {experiment}\n\nOutput of the program:\n\n```\n")
 
-        log_file.write("[Processing] " + experiment + '\n')
+        log_file.write("[Processing " + experiment + ']\n')
         # Rest state
-        log_file.write("Rest state\n")
+        log_file.write("==Rest state==\n")
         try:
             rest_state_data = prepare_rest_state(
                 path_to_task=path_to_task,
                 path_to_physio=path_to_physio,
                 path_to_experiment_info=path_to_experiment_info,
                 experiment=experiment,
-                physio_type=physio_type
+                physio_type=physio_type,
+                output_file=log_file
             )
 
             rest_state = RestState.from_files(
@@ -43,14 +44,15 @@ def process_experiment(path_to_task: str,
             log_file.write(str(e) + '\n')
 
         # Finger tapping
-        log_file.write("Finger tapping\n")
+        log_file.write("==Finger tapping==\n")
         try:
             finger_tapping_data = prepare_finger_tapping(
                 path_to_task=path_to_task,
                 path_to_physio=path_to_physio,
                 path_to_experiment_info=path_to_experiment_info,
                 experiment=experiment,
-                physio_type=physio_type
+                physio_type=physio_type,
+                output_file=log_file
             )
 
             finger_tapping = FingerTapping.from_files(
@@ -64,20 +66,22 @@ def process_experiment(path_to_task: str,
             log_file.write(str(e) + '\n')
 
         # Affective task individual
-        log_file.write("Affective task individual:\n")
-        computer_names = ['lion', 'tiger', 'leopard']
-        for computer_name in computer_names:
-            log_file.write("\tAffective task individual " + computer_name + '\n')
-            try:
-                affective_individual_data = prepare_affective_task_individual(
-                    path_to_task=path_to_task,
-                    path_to_physio=path_to_physio,
-                    path_to_experiment_info=path_to_experiment_info,
-                    experiment=experiment,
-                    physio_type=physio_type,
-                    output_file=log_file
-                )
+        try:
+            affective_individual_data = prepare_affective_task_individual(
+                path_to_task=path_to_task,
+                path_to_physio=path_to_physio,
+                path_to_experiment_info=path_to_experiment_info,
+                experiment=experiment,
+                physio_type=physio_type,
+                output_file=log_file
+            )
 
+            computer_names = ['lion', 'tiger', 'leopard']
+            for computer_name in computer_names:
+                if computer_name not in affective_individual_data:
+                    continue
+
+                log_file.write("==Affective task individual " + computer_name + '==\n')
                 affective_individual = AffectiveTaskIndividual.from_files(
                     affective_individual_data[computer_name]['participant_id'],
                     affective_individual_data[computer_name]['computer_name'],
@@ -86,18 +90,19 @@ def process_experiment(path_to_task: str,
                 )
 
                 affective_individual.write_physio_data_csv(output_path + '/' + experiment)
-            except FileDoesNotExistError as e:
-                log_file.write(str(e))
+        except FileDoesNotExistError as e:
+            log_file.write(str(e))
 
         # Affective task team
-        log_file.write("Affective task team\n")
+        log_file.write("==Affective task team==\n")
         try:
             affective_team_data = prepare_affective_task_team(
                 path_to_task=path_to_task,
                 path_to_physio=path_to_physio,
                 path_to_experiment_info=path_to_experiment_info,
                 experiment=experiment,
-                physio_type=physio_type
+                physio_type=physio_type,
+                output_file=log_file
             )
 
             affective_team = AffectiveTaskTeam.from_files(
@@ -111,19 +116,19 @@ def process_experiment(path_to_task: str,
             log_file.write(str(e) + '\n')
 
         # Ping pong competitive
-        log_file.write("Ping pong competitive:\n")
-        matches = ['0', '1']
-        for match in matches:
-            log_file.write("\tPing pong competitive " + match + '\n')
-            try:
-                ping_pong_competitive_data = prepare_ping_pong_competitive(
-                    path_to_task=path_to_task,
-                    path_to_physio=path_to_physio,
-                    path_to_experiment_info=path_to_experiment_info,
-                    experiment=experiment,
-                    physio_type=physio_type,
-                    output_file=log_file
-                )
+        try:
+            ping_pong_competitive_data = prepare_ping_pong_competitive(
+                path_to_task=path_to_task,
+                path_to_physio=path_to_physio,
+                path_to_experiment_info=path_to_experiment_info,
+                experiment=experiment,
+                physio_type=physio_type,
+                output_file=log_file
+            )
+
+            matches = ['0', '1']
+            for match in matches:
+                log_file.write("==Ping pong competitive " + match + '==\n')
 
                 ping_pong_competitive = PingPongCompetitive.from_files(
                     ping_pong_competitive_data[match]['info'],
@@ -132,18 +137,19 @@ def process_experiment(path_to_task: str,
                 )
 
                 ping_pong_competitive.write_physio_data_csv(output_path + '/' + experiment, match)
-            except FileDoesNotExistError as e:
-                log_file.write(str(e) + '\n')
+        except FileDoesNotExistError as e:
+            log_file.write(str(e) + '\n')
 
         # Ping pong cooperative
-        log_file.write("Ping pong cooperative\n")
+        log_file.write("==Ping pong cooperative==\n")
         try:
             ping_pong_cooperative_data = prepare_ping_pong_cooperative(
                 path_to_task=path_to_task,
                 path_to_physio=path_to_physio,
                 path_to_experiment_info=path_to_experiment_info,
                 experiment=experiment,
-                physio_type=physio_type
+                physio_type=physio_type,
+                output_file=log_file
             )
 
             ping_pong_cooperative = PingPongCooperative.from_files(
@@ -157,7 +163,6 @@ def process_experiment(path_to_task: str,
             log_file.write(str(e) + '\n')
 
         # Minecraft
-        log_file.write("Minecraft:\n")
         try:
             minecraft_data = prepare_minecraft(
                 path_to_task=path_to_task,
@@ -169,7 +174,7 @@ def process_experiment(path_to_task: str,
             )
 
             for mission, mission_data in minecraft_data.items():
-                log_file.write("\tMinecraft " + mission + '\n')
+                log_file.write("==Minecraft " + mission + '==\n')
                 minecraft = Minecraft.from_files(
                     mission_data['info'],
                     mission_data['task_metadata_path'],

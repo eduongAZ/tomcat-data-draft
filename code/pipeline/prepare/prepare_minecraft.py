@@ -1,9 +1,8 @@
 import json
 import os
 from typing import TextIO
-from datetime import datetime
-from dateutil.parser import parse
 
+from dateutil.parser import parse
 
 from .utils import check_file_exists
 

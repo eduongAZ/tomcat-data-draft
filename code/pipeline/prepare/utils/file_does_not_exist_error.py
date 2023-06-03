@@ -7,5 +7,5 @@ class FileDoesNotExistError(Exception):
         Args:
             file_path (Path): The path to the file that does not exist.
         """
-        super().__init__(f"File '{file_path}' does not exist.")
+        super().__init__(f"!SKIPPING TASK! File '{file_path}' does not exist.")
         self.file_path = file_path

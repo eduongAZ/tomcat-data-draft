@@ -21,16 +21,17 @@ def prepare_affective_task_individual(path_to_task: str,
     output = {}
     for computer_name, participant_id in participant_info.items():
         # Search for CSV files starting with "individual_{participant_id}"
-        csv_files = glob.glob(
-            f"{path_to_task}/{experiment}/affective/individual_{participant_id}*.csv")
+        csv_file_matching_pattern = f"{path_to_task}/{experiment}/affective/individual_{participant_id}*.csv"
+        csv_files = glob.glob(csv_file_matching_pattern)
 
         # Get the first match
         task_csv_path = csv_files[0] if csv_files else None
-        if not check_file_exists(task_csv_path):
+        if task_csv_path is None or not check_file_exists(task_csv_path):
             if output_file:
-                output_file.write("Cannot find " + task_csv_path + "\n")
+                output_file.write(
+                    "Cannot find file matching pattern " + csv_file_matching_pattern + "\n")
             else:
-                print("Cannot find " + task_csv_path)
+                print("Cannot find file matching pattern " + csv_file_matching_pattern)
             continue
 
         participant_dict = {

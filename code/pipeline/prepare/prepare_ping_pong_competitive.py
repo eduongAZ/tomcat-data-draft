@@ -26,10 +26,13 @@ def prepare_ping_pong_competitive(path_to_task: str,
     participant_ids['cheetah'] = 'exp'
 
     # getting all competitive tasks for the experiment
-    competitive_tasks = glob.glob(
-        os.path.join(path_to_task, experiment, 'ping_pong', 'competitive_*.csv'))
+    matching_file_path = os.path.join(path_to_task, experiment, 'ping_pong', 'competitive_*.csv')
+    competitive_tasks = glob.glob(matching_file_path)
+    if not competitive_tasks:
+        raise FileDoesNotExistError(matching_file_path)
 
     for task in competitive_tasks:
+        # TODO: this might be unnecessary - competitive_tasks should be empty if no valid files
         if not check_file_exists(task):
             if output_file:
                 output_file.write("Cannot find " + task + "\n")
@@ -44,17 +47,21 @@ def prepare_ping_pong_competitive(path_to_task: str,
         with open(task.replace('.csv', '_metadata.json')) as f:
             metadata = json.load(f)
 
+        # Remove all other metadata fields except for left and right team
         metadata = {key: metadata[key] for key in ["left_team", "right_team"]}
 
         # constructing paths to corresponding physio data files
         physio_paths = {}
-        for team, ids in metadata.items():
-            for participant_id in ids:
-                if participant_id == 'exp':
+        for team, task_participants_ids in metadata.items():
+            for task_participant_id in task_participants_ids:
+                if task_participant_id == 'exp':
+                    continue
+                elif task_participant_id not in participant_ids.values():
                     continue
 
                 # finding the participant name for the id
-                participant_name = [k for k, v in participant_ids.items() if v == participant_id][0]
+                participant_name = \
+                    [k for k, v in participant_ids.items() if v == task_participant_id][0]
 
                 # finding the physio data file for the participant
                 matching_physio_path = os.path.join(
@@ -81,9 +88,9 @@ def prepare_ping_pong_competitive(path_to_task: str,
 
         if not physio_paths:
             if output_file:
-                output_file.write("No physio data found for " + match_num + "\n")
+                output_file.write("No physio data found for match " + match_num + "\n")
             else:
-                print("No physio data found for " + match_num)
+                print("No physio data found for match " + match_num)
 
         experiment_dict[match_num] = {
             "info": info_path,
