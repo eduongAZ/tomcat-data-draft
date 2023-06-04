@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 
 from physio import combine_participants_physio_from_files
-from utils import read_csv_file, iso_from_unix_time
+from utils import read_csv_file, iso_from_unix_time, rename_column_id_computer
 
 
 def _combine_affective_physio_task(affective_task_df: pd.DataFrame,
@@ -112,6 +112,10 @@ class AffectiveTaskIndividual:
 
         affective_individual_physio_task['human_readable_time'] = \
             iso_from_unix_time(affective_individual_physio_task['unix_time'])
+
+        affective_individual_physio_task = rename_column_id_computer(
+            affective_individual_physio_task,
+            {participant_id: participant_name})
 
         affective_individual_physio_task = affective_individual_physio_task.set_index('unix_time')
 

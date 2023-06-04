@@ -3,7 +3,7 @@ import os
 import pandas as pd
 
 from physio import combine_participants_physio_from_files
-from utils import read_csv_file, read_json_file, iso_from_unix_time
+from utils import read_csv_file, read_json_file, iso_from_unix_time, rename_column_id_computer
 
 
 def _combine_ping_pong_physio_task(ping_pong_task_df: pd.DataFrame,
@@ -63,6 +63,7 @@ class PingPongCompetitive:
         # Read metadata
         metadata = read_json_file(metadata_path)
         participant_ids = metadata['participant_ids']
+        id_computer = {value: key for key, value in participant_ids.items()}
 
         ping_pong_task_df = read_csv_file(ping_pong_task_csv_path, delimiter=';')
 
@@ -98,6 +99,9 @@ class PingPongCompetitive:
 
         ping_pong_physio_task['human_readable_time'] = \
             iso_from_unix_time(ping_pong_physio_task['unix_time'])
+
+        ping_pong_physio_task = rename_column_id_computer(ping_pong_physio_task,
+                                                          id_computer)
 
         ping_pong_physio_task = ping_pong_physio_task.set_index('unix_time')
 

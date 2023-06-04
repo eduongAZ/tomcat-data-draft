@@ -5,7 +5,7 @@ from datetime import datetime
 import pandas as pd
 
 from physio import combine_participants_physio_from_files
-from utils import read_json_file, iso_from_unix_time
+from utils import read_json_file, iso_from_unix_time, rename_column_id_computer
 
 
 def _metadata_message_generator(metadata_file_path: str):
@@ -111,6 +111,7 @@ class Minecraft:
         # Read metadata
         metadata = read_json_file(metadata_path)
         participant_ids = metadata['participant_ids']
+        id_computer = {value: key for key, value in participant_ids.items()}
 
         # Read finger tapping task data
         minecraft_task_df = _read_metadata_file(minecraft_metadata_path)
@@ -150,6 +151,9 @@ class Minecraft:
 
         minecraft_physio_task['human_readable_time'] = \
             iso_from_unix_time(minecraft_physio_task['unix_time'])
+
+        minecraft_physio_task = rename_column_id_computer(minecraft_physio_task,
+                                                          id_computer)
 
         minecraft_physio_task = minecraft_physio_task.set_index('unix_time')
 
