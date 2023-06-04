@@ -68,18 +68,20 @@ class AffectiveTaskIndividual:
 
     @classmethod
     def from_files(cls,
+                   experiment_id: str,
                    participant_id: str,
                    participant_name: str,
                    affective_task_csv_path: str,
                    affective_physio_path: str,
-                   num_increments: int = 511):
+                   frequency: float):
         """
         Create an AffectiveTask object from a metadata dictionary
+        :param experiment_id: ID of experiment
         :param participant_id: id number of participant
         :param participant_name: name of participant computer (lion, tiger, leopard)
         :param affective_physio_path: affective task physio path
         :param affective_task_csv_path: affective task csv file path
-        :param num_increments: number of increments in the affective task
+        :param frequency: frequency of the physio data
         :return: AffectiveTask object
         """
         # Read affective task data
@@ -95,8 +97,11 @@ class AffectiveTaskIndividual:
             physio_id_filepath,
             start_time,
             end_time,
-            num_increments
+            frequency
         )
+
+        affective_individual_physio['experiment_id'] = experiment_id
+        affective_individual_physio[participant_name] = participant_id
 
         affective_individual_physio_task = _combine_affective_physio_task(
             affective_task_df,

@@ -56,10 +56,10 @@ class FingerTapping:
                    metadata_path: str,
                    finger_tapping_csv_path: str,
                    finger_tapping_physio_name_filepath: dict[str, str],
-                   num_increments: int = 511):
+                   frequency: float):
         """
         Create a FingerTapping object from a metadata dictionary
-        :param num_increments: number of time series increments
+        :param frequency: frequency of the physio data
         :param finger_tapping_physio_name_filepath: finger tapping physio name-filepath mapping
         :param finger_tapping_csv_path: finger tapping csv file path
         :param metadata_path: json file metadata path
@@ -83,8 +83,13 @@ class FingerTapping:
             physio_id_filepath,
             start_time,
             end_time,
-            num_increments
+            frequency
         )
+
+        finger_tapping_physio['experiment_id'] = metadata['experiment']
+        finger_tapping_physio['lion_id'] = participant_ids['lion']
+        finger_tapping_physio['tiger_id'] = participant_ids['tiger']
+        finger_tapping_physio['leopard_id'] = participant_ids['leopard']
 
         finger_tapping_physio_task = _combine_finger_tapping_physio_task(
             finger_tapping_task_df,

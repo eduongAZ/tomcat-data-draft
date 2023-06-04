@@ -12,7 +12,7 @@ def _sync_data_to_time_series(df: pd.DataFrame, time_series: list[float]) -> pd.
     :return: physio data synchronized to time series
     """
     # Define the columns for the new dataframe
-    columns = df.columns.drop(['line', 'human_readable_time', 'unix_time', 'event_type'])
+    columns = df.columns.drop(['Unnamed: 0', 'human_readable_time', 'unix_time', 'event_type'])
     synced_df = pd.DataFrame(columns=columns, index=time_series)
 
     df_start_time = df['unix_time'].min()  # Get the start time in the df
@@ -48,17 +48,21 @@ def combine_participants_physio(
         physio_df: dict[str, pd.DataFrame],
         start_time: float,
         end_time: float,
-        num_increments: int) -> pd.DataFrame:
+        frequency: float) -> pd.DataFrame:
     """
     Combine physio data from multiple participants into one dataframe.
     :param physio_df: dictionary of participant id and physio dataframe
     :param start_time: start time
     :param end_time: end time
-    :param num_increments: number of increments
+    :param frequency: time series frequency
     :return: combined physio dataframe
     """
     # Generate time series
-    time_series = generate_time_series(start_time, end_time, num_increments)
+    time_series = generate_time_series(start_time, end_time, frequency)
+
+    # If physio_df is empty, return combined_df with unix_time as index
+    if not physio_df:
+        return pd.DataFrame(index=time_series).rename_axis('unix_time')
 
     combined_df = None
 

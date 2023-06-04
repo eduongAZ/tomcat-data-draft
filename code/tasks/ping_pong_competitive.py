@@ -11,7 +11,6 @@ def _combine_ping_pong_physio_task(ping_pong_task_df: pd.DataFrame,
                                    ping_pong_physio_df: pd.DataFrame) -> pd.DataFrame:
     # Reset the index
     ping_pong_physio_df = ping_pong_physio_df.reset_index()
-    ping_pong_task_df = ping_pong_task_df.reset_index()
 
     # Save the original 'unix_time' column
     original_unix_time = ping_pong_physio_df['unix_time'].copy()
@@ -36,6 +35,9 @@ def _combine_ping_pong_physio_task(ping_pong_task_df: pd.DataFrame,
     # Set 'unix_time' back as the index
     merged_df = merged_df.set_index('unix_time')
 
+    # Drop columns
+    merged_df = merged_df.drop(columns=['monotonic_time', 'human_readable_time'])
+
     return merged_df
 
 
@@ -56,10 +58,10 @@ class PingPongCompetitive:
                    metadata_path: str,
                    ping_pong_task_csv_path: str,
                    ping_pong_physio_name_filepath: dict[str, str],
-                   num_increments: int = 1324):
+                   frequency: float):
         """
         Create a PingPongCompetitive object from a metadata dictionary
-        :param num_increments: number of time series increments
+        :param frequency: frequency of the physio data
         :param ping_pong_physio_name_filepath: ping pong competitive physio name-filepath mapping
         :param ping_pong_task_csv_path: ping pong competitive task path
         :param metadata_path: json file metadata path
@@ -82,8 +84,13 @@ class PingPongCompetitive:
             physio_id_filepath,
             start_time,
             end_time,
-            num_increments
+            frequency
         )
+
+        ping_pong_physio['experiment_id'] = metadata['experiment']
+        ping_pong_physio['lion_id'] = participant_ids['lion']
+        ping_pong_physio['tiger_id'] = participant_ids['tiger']
+        ping_pong_physio['leopard_id'] = participant_ids['leopard']
 
         ping_pong_physio_task = _combine_ping_pong_physio_task(
             ping_pong_task_df,
@@ -97,7 +104,7 @@ class PingPongCompetitive:
             ping_pong_physio_task=ping_pong_physio_task
         )
 
-    def write_physio_data_csv(self, output_dir_path: str, match: int):
+    def write_physio_data_csv(self, output_dir_path: str, match: str):
         """
         Write the physio data to a csv file in output directory
         :param match: ping pong competitive match id
