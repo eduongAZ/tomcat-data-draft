@@ -3,8 +3,7 @@ import os
 import pandas as pd
 
 from physio import combine_participants_physio_from_files
-from utils import read_csv_file
-from utils import read_json_file
+from utils import read_csv_file, read_json_file, iso_from_unix_time
 
 
 def _combine_ping_pong_physio_task(ping_pong_task_df: pd.DataFrame,
@@ -93,6 +92,13 @@ class PingPongCooperative:
             ping_pong_task_df,
             ping_pong_physio
         )
+
+        physio_task_start_time = ping_pong_physio_task['unix_time'].iloc[0]
+        ping_pong_physio_task["seconds_since_start"] = \
+            ping_pong_physio_task["unix_time"] - physio_task_start_time
+
+        ping_pong_physio_task['human_readable_time'] = \
+            iso_from_unix_time(ping_pong_physio_task['unix_time'])
 
         ping_pong_physio_task = ping_pong_physio_task.set_index('unix_time')
 

@@ -5,8 +5,7 @@ import numpy as np
 import pandas as pd
 
 from physio import combine_participants_physio_from_files
-from utils import read_csv_file
-from utils import read_json_file
+from utils import read_csv_file, read_json_file, iso_from_unix_time
 
 
 def _combine_affective_physio_task(affective_task_df: pd.DataFrame,
@@ -107,6 +106,13 @@ class AffectiveTaskTeam:
             affective_task_team_df,
             affective_team_physio
         )
+
+        physio_task_start_time = affective_team_physio_task['unix_time'].iloc[0]
+        affective_team_physio_task["seconds_since_start"] = \
+            affective_team_physio_task["unix_time"] - physio_task_start_time
+
+        affective_team_physio_task['human_readable_time'] = \
+            iso_from_unix_time(affective_team_physio_task['unix_time'])
 
         affective_team_physio_task = affective_team_physio_task.set_index('unix_time')
 

@@ -5,7 +5,7 @@ from datetime import datetime
 import pandas as pd
 
 from physio import combine_participants_physio_from_files
-from utils import read_json_file
+from utils import read_json_file, iso_from_unix_time
 
 
 def _metadata_message_generator(metadata_file_path: str):
@@ -143,6 +143,13 @@ class Minecraft:
             minecraft_task_df,
             minecraft_physio
         )
+
+        physio_task_start_time = minecraft_physio_task['unix_time'].iloc[0]
+        minecraft_physio_task["seconds_since_start"] = \
+            minecraft_physio_task["unix_time"] - physio_task_start_time
+
+        minecraft_physio_task['human_readable_time'] = \
+            iso_from_unix_time(minecraft_physio_task['unix_time'])
 
         minecraft_physio_task = minecraft_physio_task.set_index('unix_time')
 
