@@ -3,7 +3,7 @@ import os
 import pandas as pd
 
 from physio import combine_participants_physio_from_files
-from utils import read_csv_file, read_json_file
+from utils import read_csv_file, read_json_file, iso_from_unix_time, rename_column_id_computer
 
 
 def _combine_rest_state_physio_task(rest_state_task_df: pd.DataFrame,
@@ -12,7 +12,7 @@ def _combine_rest_state_physio_task(rest_state_task_df: pd.DataFrame,
     end_time = rest_state_task_df.query('event_type == "end_rest_state"').iloc[0]['time']
 
     def _assign_event_type(row):
-        if start_time <= row.name <= end_time:
+        if start_time <= row["unix_time"] <= end_time:
             return 'during_rest_state'
         else:
             return 'outside_of_rest_state'
@@ -50,6 +50,7 @@ class RestState:
         # Read metadata
         metadata = read_json_file(metadata_path)
         participant_ids = metadata['participant_ids']
+        id_computer = {value: key for key, value in participant_ids.items()}
 
         # Read rest state task data
         rest_state_task_df = read_csv_file(rest_state_csv_path, delimiter=';')
@@ -68,6 +69,8 @@ class RestState:
             frequency
         )
 
+        rest_state_physio = rest_state_physio.reset_index()
+
         rest_state_physio['experiment_id'] = metadata['experiment']
         rest_state_physio['lion_id'] = participant_ids['lion']
         rest_state_physio['tiger_id'] = participant_ids['tiger']
@@ -77,6 +80,17 @@ class RestState:
             rest_state_task_df,
             rest_state_physio
         )
+
+        physio_task_start_time = rest_state_physio_task['unix_time'].iloc[0]
+        rest_state_physio_task["seconds_since_start"] = \
+            rest_state_physio_task["unix_time"] - physio_task_start_time
+
+        rest_state_physio_task['human_readable_time'] = \
+            iso_from_unix_time(rest_state_physio_task['unix_time'])
+
+        rest_state_physio_task = rename_column_id_computer(rest_state_physio_task, id_computer)
+
+        rest_state_physio_task = rest_state_physio_task.set_index('unix_time')
 
         return cls(
             participant_ids=participant_ids,

@@ -5,14 +5,12 @@ import numpy as np
 import pandas as pd
 
 from physio import combine_participants_physio_from_files
-from utils import read_csv_file
-from utils import read_json_file
+from utils import read_csv_file, read_json_file, iso_from_unix_time, rename_column_id_computer
 
 
 def _combine_affective_physio_task(affective_task_df: pd.DataFrame,
                                    affective_physio_df: pd.DataFrame) -> pd.DataFrame:
     # Reset the index
-    affective_physio_df = affective_physio_df.reset_index()
     affective_task_df = affective_task_df.reset_index()
 
     # Save the original 'unix_time' column
@@ -48,9 +46,6 @@ def _combine_affective_physio_task(affective_task_df: pd.DataFrame,
     # Restore the original 'unix_time' column
     affective_physio_df['unix_time'] = original_unix_time
 
-    # Set 'unix_time' back as the index
-    affective_physio_df = affective_physio_df.set_index('unix_time')
-
     return affective_physio_df
 
 
@@ -82,6 +77,7 @@ class AffectiveTaskTeam:
         # Read metadata
         metadata = read_json_file(metadata_path)
         participant_ids = metadata['participant_ids']
+        id_computer = {value: key for key, value in participant_ids.items()}
 
         # Read affective task team data
         affective_task_team_df = read_csv_file(affective_task_team_csv_path, delimiter=';')
@@ -100,6 +96,8 @@ class AffectiveTaskTeam:
             frequency
         )
 
+        affective_team_physio = affective_team_physio.reset_index()
+
         affective_team_physio['experiment_id'] = metadata['experiment']
         affective_team_physio['lion_id'] = participant_ids['lion']
         affective_team_physio['tiger_id'] = participant_ids['tiger']
@@ -109,6 +107,18 @@ class AffectiveTaskTeam:
             affective_task_team_df,
             affective_team_physio
         )
+
+        physio_task_start_time = affective_team_physio_task['unix_time'].iloc[0]
+        affective_team_physio_task["seconds_since_start"] = \
+            affective_team_physio_task["unix_time"] - physio_task_start_time
+
+        affective_team_physio_task['human_readable_time'] = \
+            iso_from_unix_time(affective_team_physio_task['unix_time'])
+
+        affective_team_physio_task = rename_column_id_computer(affective_team_physio_task,
+                                                               id_computer)
+
+        affective_team_physio_task = affective_team_physio_task.set_index('unix_time')
 
         return cls(
             participant_ids=participant_ids,

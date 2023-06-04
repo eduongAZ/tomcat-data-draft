@@ -5,7 +5,7 @@ from datetime import datetime
 import pandas as pd
 
 from physio import combine_participants_physio_from_files
-from utils import read_json_file
+from utils import read_json_file, iso_from_unix_time, rename_column_id_computer
 
 
 def _metadata_message_generator(metadata_file_path: str):
@@ -59,9 +59,6 @@ def _read_metadata_file(metadata_file_path: str) -> pd.DataFrame:
 
 def _combine_minecraft_physio_task(minecraft_task_df: pd.DataFrame,
                                    minecraft_physio_df: pd.DataFrame) -> pd.DataFrame:
-    # Reset the index
-    minecraft_physio_df = minecraft_physio_df.reset_index()
-
     # Save the original 'unix_time' column
     original_unix_time = minecraft_physio_df['unix_time'].copy()
 
@@ -81,9 +78,6 @@ def _combine_minecraft_physio_task(minecraft_task_df: pd.DataFrame,
 
     # Drop the 'time' column from the task data as it's redundant now
     merged_df = merged_df.drop(columns=['time'])
-
-    # Set 'unix_time' back as the index
-    merged_df = merged_df.set_index('unix_time')
 
     return merged_df
 
@@ -117,9 +111,13 @@ class Minecraft:
         # Read metadata
         metadata = read_json_file(metadata_path)
         participant_ids = metadata['participant_ids']
+        id_computer = {value: key for key, value in participant_ids.items()}
 
         # Read finger tapping task data
         minecraft_task_df = _read_metadata_file(minecraft_metadata_path)
+
+        if len(minecraft_task_df) == 0:
+            raise ValueError("No task data found in metadata file")
 
         start_time = minecraft_task_df['time'].iloc[0]
         end_time = minecraft_task_df['time'].iloc[-1]
@@ -135,6 +133,8 @@ class Minecraft:
             frequency
         )
 
+        minecraft_physio = minecraft_physio.reset_index()
+
         minecraft_physio['experiment_id'] = metadata['experiment']
         minecraft_physio['lion_id'] = participant_ids['lion']
         minecraft_physio['tiger_id'] = participant_ids['tiger']
@@ -144,6 +144,18 @@ class Minecraft:
             minecraft_task_df,
             minecraft_physio
         )
+
+        physio_task_start_time = minecraft_physio_task['unix_time'].iloc[0]
+        minecraft_physio_task["seconds_since_start"] = \
+            minecraft_physio_task["unix_time"] - physio_task_start_time
+
+        minecraft_physio_task['human_readable_time'] = \
+            iso_from_unix_time(minecraft_physio_task['unix_time'])
+
+        minecraft_physio_task = rename_column_id_computer(minecraft_physio_task,
+                                                          id_computer)
+
+        minecraft_physio_task = minecraft_physio_task.set_index('unix_time')
 
         return cls(
             participant_ids=participant_ids,

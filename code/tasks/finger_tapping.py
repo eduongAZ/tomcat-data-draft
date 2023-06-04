@@ -3,14 +3,12 @@ import os
 import pandas as pd
 
 from physio import combine_participants_physio_from_files
-from utils import read_csv_file
-from utils import read_json_file
+from utils import read_csv_file, read_json_file, iso_from_unix_time, rename_column_id_computer
 
 
 def _combine_finger_tapping_physio_task(finger_tapping_task_df: pd.DataFrame,
                                         finger_tapping_physio_df: pd.DataFrame) -> pd.DataFrame:
     # Reset the index
-    finger_tapping_physio_df = finger_tapping_physio_df.reset_index()
     finger_tapping_task_df = finger_tapping_task_df.reset_index()
 
     # Save the original 'unix_time' column
@@ -32,9 +30,6 @@ def _combine_finger_tapping_physio_task(finger_tapping_task_df: pd.DataFrame,
 
     # Drop the 'time' column from the task data as it's redundant now
     merged_df = merged_df.drop(columns=['time'])
-
-    # Set 'unix_time' back as the index
-    merged_df = merged_df.set_index('unix_time')
 
     return merged_df
 
@@ -68,6 +63,7 @@ class FingerTapping:
         # Read metadata
         metadata = read_json_file(metadata_path)
         participant_ids = metadata['participant_ids']
+        id_computer = {value: key for key, value in participant_ids.items()}
 
         # Read finger tapping task data
         finger_tapping_task_df = read_csv_file(finger_tapping_csv_path, delimiter=';')
@@ -86,6 +82,7 @@ class FingerTapping:
             frequency
         )
 
+        finger_tapping_physio = finger_tapping_physio.reset_index()
         finger_tapping_physio['experiment_id'] = metadata['experiment']
         finger_tapping_physio['lion_id'] = participant_ids['lion']
         finger_tapping_physio['tiger_id'] = participant_ids['tiger']
@@ -95,6 +92,18 @@ class FingerTapping:
             finger_tapping_task_df,
             finger_tapping_physio
         )
+
+        physio_task_start_time = finger_tapping_physio_task['unix_time'].iloc[0]
+        finger_tapping_physio_task["seconds_since_start"] = \
+            finger_tapping_physio_task["unix_time"] - physio_task_start_time
+
+        finger_tapping_physio_task['human_readable_time'] = \
+            iso_from_unix_time(finger_tapping_physio_task['unix_time'])
+
+        finger_tapping_physio_task = rename_column_id_computer(finger_tapping_physio_task,
+                                                               id_computer)
+
+        finger_tapping_physio_task = finger_tapping_physio_task.set_index('unix_time')
 
         return cls(
             participant_ids=participant_ids,

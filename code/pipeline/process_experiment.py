@@ -381,7 +381,9 @@ def process_experiment(path_to_task: str,
                        experiments: list[str],
                        output_path: str,
                        frequency: float):
-    for experiment in tqdm(experiments):
+    pbar = tqdm(experiments)
+    for experiment in pbar:
+        pbar.set_description(experiment)
         # Create the directories if they don't exist
         os.makedirs(os.path.join(output_path, experiment), exist_ok=True)
 

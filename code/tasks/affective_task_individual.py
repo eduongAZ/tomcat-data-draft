@@ -5,13 +5,12 @@ import numpy as np
 import pandas as pd
 
 from physio import combine_participants_physio_from_files
-from utils import read_csv_file
+from utils import read_csv_file, iso_from_unix_time, rename_column_id_computer
 
 
 def _combine_affective_physio_task(affective_task_df: pd.DataFrame,
                                    affective_physio_df: pd.DataFrame) -> pd.DataFrame:
     # Reset the index
-    affective_physio_df = affective_physio_df.reset_index()
     affective_task_df = affective_task_df.reset_index()
 
     # Save the original 'unix_time' column
@@ -46,9 +45,6 @@ def _combine_affective_physio_task(affective_task_df: pd.DataFrame,
 
     # Restore the original 'unix_time' column
     affective_physio_df['unix_time'] = original_unix_time
-
-    # Set 'unix_time' back as the index
-    affective_physio_df = affective_physio_df.set_index('unix_time')
 
     return affective_physio_df
 
@@ -100,6 +96,8 @@ class AffectiveTaskIndividual:
             frequency
         )
 
+        affective_individual_physio = affective_individual_physio.reset_index()
+
         affective_individual_physio['experiment_id'] = experiment_id
         affective_individual_physio[participant_name] = participant_id
 
@@ -107,6 +105,19 @@ class AffectiveTaskIndividual:
             affective_task_df,
             affective_individual_physio
         )
+
+        physio_task_start_time = affective_individual_physio_task['unix_time'].iloc[0]
+        affective_individual_physio_task["seconds_since_start"] = \
+            affective_individual_physio_task["unix_time"] - physio_task_start_time
+
+        affective_individual_physio_task['human_readable_time'] = \
+            iso_from_unix_time(affective_individual_physio_task['unix_time'])
+
+        affective_individual_physio_task = rename_column_id_computer(
+            affective_individual_physio_task,
+            {participant_id: participant_name})
+
+        affective_individual_physio_task = affective_individual_physio_task.set_index('unix_time')
 
         return cls(
             participant_id=participant_id,
