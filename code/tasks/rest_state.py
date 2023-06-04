@@ -12,7 +12,7 @@ def _combine_rest_state_physio_task(rest_state_task_df: pd.DataFrame,
     end_time = rest_state_task_df.query('event_type == "end_rest_state"').iloc[0]['time']
 
     def _assign_event_type(row):
-        if start_time <= row.name <= end_time:
+        if start_time <= row["unix_time"] <= end_time:
             return 'during_rest_state'
         else:
             return 'outside_of_rest_state'
@@ -68,6 +68,8 @@ class RestState:
             frequency
         )
 
+        rest_state_physio = rest_state_physio.reset_index()
+
         rest_state_physio['experiment_id'] = metadata['experiment']
         rest_state_physio['lion_id'] = participant_ids['lion']
         rest_state_physio['tiger_id'] = participant_ids['tiger']
@@ -77,6 +79,8 @@ class RestState:
             rest_state_task_df,
             rest_state_physio
         )
+
+        rest_state_physio_task = rest_state_physio_task.set_index('unix_time')
 
         return cls(
             participant_ids=participant_ids,

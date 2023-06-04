@@ -12,36 +12,64 @@ def _sync_data_to_time_series(df: pd.DataFrame, time_series: list[float]) -> pd.
     :return: physio data synchronized to time series
     """
     # Define the columns for the new dataframe
-    columns = df.columns.drop(['Unnamed: 0', 'human_readable_time', 'unix_time', 'event_type'])
-    synced_df = pd.DataFrame(columns=columns, index=time_series)
+    # columns = df.columns.drop(['Unnamed: 0', 'human_readable_time', 'unix_time', 'event_type'])
+    # synced_df = pd.DataFrame(columns=columns, index=time_series)
 
-    df_start_time = df['unix_time'].min()  # Get the start time in the df
+    # df_start_time = df['unix_time'].min()  # Get the start time in the df
+    #
+    # for target_time in time_series:
+    #     if target_time < df_start_time:  # Skip if target_time is less than start_time in df
+    #         continue
+    #
+    #     # Find the rows where the target time fits
+    #     mask = (df['unix_time'] >= target_time)
+    #     if mask.sum() == 0:
+    #         break
+    #
+    #     # Get the row before and after the target time
+    #     after_target_row = df[mask].iloc[0]
+    #     before_target_row = df[df['unix_time'] < target_time].iloc[-1]
+    #
+    #     for column in columns:
+    #         start_value = before_target_row[column]
+    #         end_value = after_target_row[column]
+    #         start_time = before_target_row['unix_time']
+    #         end_time = after_target_row['unix_time']
+    #
+    #         interpolated_value = linear_interpolation(
+    #             start_time, end_time, target_time, start_value, end_value)
+    #
+    #         synced_df.loc[target_time, column] = interpolated_value
+    #
+    # return synced_df
 
-    for target_time in time_series:
-        if target_time < df_start_time:  # Skip if target_time is less than start_time in df
-            continue
+    sync_df = pd.DataFrame(time_series, columns=['unix_time'])
 
-        # Find the rows where the target time fits
-        mask = (df['unix_time'] >= target_time)
-        if mask.sum() == 0:
-            break
+    df['original_unix_time'] = df['unix_time'].copy()
 
-        # Get the row before and after the target time
-        after_target_row = df[mask].iloc[0]
-        before_target_row = df[df['unix_time'] < target_time].iloc[-1]
+    # merge_asof to find the nearest entry at or before each time
+    df_before = pd.merge_asof(sync_df, df, on='unix_time', direction='backward')
 
-        for column in columns:
-            start_value = before_target_row[column]
-            end_value = after_target_row[column]
-            start_time = before_target_row['unix_time']
-            end_time = after_target_row['unix_time']
+    # merge_asof to find the nearest entry at or after each time
+    df_after = pd.merge_asof(sync_df, df, on='unix_time', direction='forward')
 
-            interpolated_value = linear_interpolation(
-                start_time, end_time, target_time, start_value, end_value)
+    columns = df.columns.drop(['Unnamed: 0',
+                               'human_readable_time',
+                               'unix_time',
+                               'event_type',
+                               'original_unix_time'])
+    for column in columns:
+        sync_df[column] = linear_interpolation(
+            df_before['original_unix_time'],
+            df_after['original_unix_time'],
+            sync_df['unix_time'],
+            df_before[column],
+            df_after[column]
+        )
 
-            synced_df.loc[target_time, column] = interpolated_value
+    sync_df = sync_df.set_index('unix_time')
 
-    return synced_df
+    return sync_df
 
 
 def combine_participants_physio(

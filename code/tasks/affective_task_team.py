@@ -12,7 +12,6 @@ from utils import read_json_file
 def _combine_affective_physio_task(affective_task_df: pd.DataFrame,
                                    affective_physio_df: pd.DataFrame) -> pd.DataFrame:
     # Reset the index
-    affective_physio_df = affective_physio_df.reset_index()
     affective_task_df = affective_task_df.reset_index()
 
     # Save the original 'unix_time' column
@@ -47,9 +46,6 @@ def _combine_affective_physio_task(affective_task_df: pd.DataFrame,
 
     # Restore the original 'unix_time' column
     affective_physio_df['unix_time'] = original_unix_time
-
-    # Set 'unix_time' back as the index
-    affective_physio_df = affective_physio_df.set_index('unix_time')
 
     return affective_physio_df
 
@@ -100,6 +96,8 @@ class AffectiveTaskTeam:
             frequency
         )
 
+        affective_team_physio = affective_team_physio.reset_index()
+
         affective_team_physio['experiment_id'] = metadata['experiment']
         affective_team_physio['lion_id'] = participant_ids['lion']
         affective_team_physio['tiger_id'] = participant_ids['tiger']
@@ -109,6 +107,8 @@ class AffectiveTaskTeam:
             affective_task_team_df,
             affective_team_physio
         )
+
+        affective_team_physio_task = affective_team_physio_task.set_index('unix_time')
 
         return cls(
             participant_ids=participant_ids,

@@ -10,7 +10,6 @@ from utils import read_json_file
 def _combine_finger_tapping_physio_task(finger_tapping_task_df: pd.DataFrame,
                                         finger_tapping_physio_df: pd.DataFrame) -> pd.DataFrame:
     # Reset the index
-    finger_tapping_physio_df = finger_tapping_physio_df.reset_index()
     finger_tapping_task_df = finger_tapping_task_df.reset_index()
 
     # Save the original 'unix_time' column
@@ -32,9 +31,6 @@ def _combine_finger_tapping_physio_task(finger_tapping_task_df: pd.DataFrame,
 
     # Drop the 'time' column from the task data as it's redundant now
     merged_df = merged_df.drop(columns=['time'])
-
-    # Set 'unix_time' back as the index
-    merged_df = merged_df.set_index('unix_time')
 
     return merged_df
 
@@ -86,6 +82,7 @@ class FingerTapping:
             frequency
         )
 
+        finger_tapping_physio = finger_tapping_physio.reset_index()
         finger_tapping_physio['experiment_id'] = metadata['experiment']
         finger_tapping_physio['lion_id'] = participant_ids['lion']
         finger_tapping_physio['tiger_id'] = participant_ids['tiger']
@@ -95,6 +92,8 @@ class FingerTapping:
             finger_tapping_task_df,
             finger_tapping_physio
         )
+
+        finger_tapping_physio_task = finger_tapping_physio_task.set_index('unix_time')
 
         return cls(
             participant_ids=participant_ids,

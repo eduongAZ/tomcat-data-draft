@@ -9,9 +9,6 @@ from utils import read_json_file
 
 def _combine_ping_pong_physio_task(ping_pong_task_df: pd.DataFrame,
                                    ping_pong_physio_df: pd.DataFrame) -> pd.DataFrame:
-    # Reset the index
-    ping_pong_physio_df = ping_pong_physio_df.reset_index()
-
     # Save the original 'unix_time' column
     original_unix_time = ping_pong_physio_df['unix_time'].copy()
 
@@ -31,9 +28,6 @@ def _combine_ping_pong_physio_task(ping_pong_task_df: pd.DataFrame,
 
     # Drop the 'time' column from the task data as it's redundant now
     merged_df = merged_df.drop(columns=['time'])
-
-    # Set 'unix_time' back as the index
-    merged_df = merged_df.set_index('unix_time')
 
     # Drop columns
     merged_df = merged_df.drop(columns=['monotonic_time', 'human_readable_time'])
@@ -88,6 +82,8 @@ class PingPongCooperative:
             frequency
         )
 
+        ping_pong_physio = ping_pong_physio.reset_index()
+
         ping_pong_physio['experiment_id'] = metadata['experiment']
         ping_pong_physio['lion_id'] = participant_ids['lion']
         ping_pong_physio['tiger_id'] = participant_ids['tiger']
@@ -97,6 +93,8 @@ class PingPongCooperative:
             ping_pong_task_df,
             ping_pong_physio
         )
+
+        ping_pong_physio_task = ping_pong_physio_task.set_index('unix_time')
 
         return cls(
             participant_ids=participant_ids,
