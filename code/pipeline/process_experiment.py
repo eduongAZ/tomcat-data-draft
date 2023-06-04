@@ -1,5 +1,7 @@
 import os
 
+from tqdm import tqdm
+
 from tasks import RestState, FingerTapping, AffectiveTaskIndividual, AffectiveTaskTeam, \
     PingPongCompetitive, PingPongCooperative, Minecraft
 from .prepare import prepare_rest_state, prepare_finger_tapping, prepare_affective_task_individual, \
@@ -12,8 +14,9 @@ def process_experiment(path_to_task: str,
                        path_to_experiment_info: str,
                        physio_type: str,
                        experiments: list[str],
-                       output_path: str):
-    for experiment in experiments:
+                       output_path: str,
+                       frequency: float):
+    for experiment in tqdm(experiments):
         # Create the directories if they don't exist
         os.makedirs(os.path.join(output_path, experiment), exist_ok=True)
 
@@ -36,7 +39,8 @@ def process_experiment(path_to_task: str,
             rest_state = RestState.from_files(
                 rest_state_data['info'],
                 rest_state_data['task_csv_path'],
-                rest_state_data['physio_name_path']
+                rest_state_data['physio_name_path'],
+                frequency=frequency
             )
 
             rest_state.write_physio_data_csv(output_path + '/' + experiment)
@@ -58,7 +62,8 @@ def process_experiment(path_to_task: str,
             finger_tapping = FingerTapping.from_files(
                 finger_tapping_data['info'],
                 finger_tapping_data['task_csv_path'],
-                finger_tapping_data['physio_name_path']
+                finger_tapping_data['physio_name_path'],
+                frequency=frequency
             )
 
             finger_tapping.write_physio_data_csv(output_path + '/' + experiment)
@@ -83,10 +88,12 @@ def process_experiment(path_to_task: str,
 
                 log_file.write("==Affective task individual " + computer_name + '==\n')
                 affective_individual = AffectiveTaskIndividual.from_files(
+                    experiment,
                     affective_individual_data[computer_name]['participant_id'],
                     affective_individual_data[computer_name]['computer_name'],
                     affective_individual_data[computer_name]['task_csv_path'],
-                    affective_individual_data[computer_name]['physio_csv_path']
+                    affective_individual_data[computer_name]['physio_csv_path'],
+                    frequency=frequency
                 )
 
                 affective_individual.write_physio_data_csv(output_path + '/' + experiment)
@@ -108,7 +115,8 @@ def process_experiment(path_to_task: str,
             affective_team = AffectiveTaskTeam.from_files(
                 affective_team_data['info'],
                 affective_team_data['task_csv_path'],
-                affective_team_data['physio_name_path']
+                affective_team_data['physio_name_path'],
+                frequency=frequency
             )
 
             affective_team.write_physio_data_csv(output_path + '/' + experiment)
@@ -133,7 +141,8 @@ def process_experiment(path_to_task: str,
                 ping_pong_competitive = PingPongCompetitive.from_files(
                     ping_pong_competitive_data[match]['info'],
                     ping_pong_competitive_data[match]['task_csv_path'],
-                    ping_pong_competitive_data[match]['physio_name_path']
+                    ping_pong_competitive_data[match]['physio_name_path'],
+                    frequency=frequency
                 )
 
                 ping_pong_competitive.write_physio_data_csv(output_path + '/' + experiment, match)
@@ -155,7 +164,8 @@ def process_experiment(path_to_task: str,
             ping_pong_cooperative = PingPongCooperative.from_files(
                 ping_pong_cooperative_data['info'],
                 ping_pong_cooperative_data['task_csv_path'],
-                ping_pong_cooperative_data['physio_name_path']
+                ping_pong_cooperative_data['physio_name_path'],
+                frequency=frequency
             )
 
             ping_pong_cooperative.write_physio_data_csv(output_path + '/' + experiment)
@@ -178,7 +188,8 @@ def process_experiment(path_to_task: str,
                 minecraft = Minecraft.from_files(
                     mission_data['info'],
                     mission_data['task_metadata_path'],
-                    mission_data['physio_name_path']
+                    mission_data['physio_name_path'],
+                    frequency=frequency
                 )
 
                 minecraft.write_physio_data_csv(output_path + '/' + experiment, mission)

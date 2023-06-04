@@ -58,10 +58,10 @@ class PingPongCompetitive:
                    metadata_path: str,
                    ping_pong_task_csv_path: str,
                    ping_pong_physio_name_filepath: dict[str, str],
-                   num_increments: int = 1324):
+                   frequency: float):
         """
         Create a PingPongCompetitive object from a metadata dictionary
-        :param num_increments: number of time series increments
+        :param frequency: frequency of the physio data
         :param ping_pong_physio_name_filepath: ping pong competitive physio name-filepath mapping
         :param ping_pong_task_csv_path: ping pong competitive task path
         :param metadata_path: json file metadata path
@@ -84,8 +84,13 @@ class PingPongCompetitive:
             physio_id_filepath,
             start_time,
             end_time,
-            num_increments
+            frequency
         )
+
+        ping_pong_physio['experiment_id'] = metadata['experiment']
+        ping_pong_physio['lion_id'] = participant_ids['lion']
+        ping_pong_physio['tiger_id'] = participant_ids['tiger']
+        ping_pong_physio['leopard_id'] = participant_ids['leopard']
 
         ping_pong_physio_task = _combine_ping_pong_physio_task(
             ping_pong_task_df,

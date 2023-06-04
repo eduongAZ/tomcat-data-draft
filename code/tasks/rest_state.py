@@ -38,10 +38,10 @@ class RestState:
                    metadata_path: str,
                    rest_state_csv_path: str,
                    rest_state_physio_name_filepath: dict[str, str],
-                   num_increments: int = 3069):
+                   frequency: float):
         """
         Create a RestState object from a metadata dictionary
-        :param num_increments: number of time series increments
+        :param frequency: time series frequency
         :param rest_state_physio_name_filepath: rest state physio name-filepath mapping
         :param rest_state_csv_path: rest state csv file path
         :param metadata_path: json file metadata path
@@ -65,8 +65,13 @@ class RestState:
             physio_id_filepath,
             start_time,
             end_time,
-            num_increments
+            frequency
         )
+
+        rest_state_physio['experiment_id'] = metadata['experiment']
+        rest_state_physio['lion_id'] = participant_ids['lion']
+        rest_state_physio['tiger_id'] = participant_ids['tiger']
+        rest_state_physio['leopard_id'] = participant_ids['leopard']
 
         rest_state_physio_task = _combine_rest_state_physio_task(
             rest_state_task_df,

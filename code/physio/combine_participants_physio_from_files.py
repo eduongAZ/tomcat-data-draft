@@ -9,7 +9,7 @@ def combine_participants_physio_from_files(
         id_filepath: dict[str, str],
         start_time: float,
         end_time: float,
-        num_increments: int) -> pd.DataFrame:
+        frequency: float) -> pd.DataFrame:
     id_df = {}
 
     for participant_id, filepath in id_filepath.items():
@@ -26,5 +26,5 @@ def combine_participants_physio_from_files(
         id_df,
         start_time,
         end_time,
-        num_increments
+        frequency
     )

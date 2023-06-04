@@ -48,17 +48,17 @@ def combine_participants_physio(
         physio_df: dict[str, pd.DataFrame],
         start_time: float,
         end_time: float,
-        num_increments: int) -> pd.DataFrame:
+        frequency: float) -> pd.DataFrame:
     """
     Combine physio data from multiple participants into one dataframe.
     :param physio_df: dictionary of participant id and physio dataframe
     :param start_time: start time
     :param end_time: end time
-    :param num_increments: number of increments
+    :param frequency: time series frequency
     :return: combined physio dataframe
     """
     # Generate time series
-    time_series = generate_time_series(start_time, end_time, num_increments)
+    time_series = generate_time_series(start_time, end_time, frequency)
 
     # If physio_df is empty, return combined_df with unix_time as index
     if not physio_df:

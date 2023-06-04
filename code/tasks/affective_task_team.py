@@ -70,10 +70,10 @@ class AffectiveTaskTeam:
                    metadata_path: str,
                    affective_task_team_csv_path: str,
                    affective_team_physio_name_filepath: dict[str, str],
-                   num_increments: int = 6981):
+                   frequency: float):
         """
         Create an AffectiveTaskTeam object from a metadata dictionary
-        :param num_increments: number of time series increments
+        :param frequency: frequency of the data
         :param affective_team_physio_name_filepath: affective task team physio name-filepath mapping
         :param affective_task_team_csv_path: affective task team csv file path
         :param metadata_path: json file metadata path
@@ -97,8 +97,13 @@ class AffectiveTaskTeam:
             physio_id_filepath,
             start_time,
             end_time,
-            num_increments
+            frequency
         )
+
+        affective_team_physio['experiment_id'] = metadata['experiment']
+        affective_team_physio['lion_id'] = participant_ids['lion']
+        affective_team_physio['tiger_id'] = participant_ids['tiger']
+        affective_team_physio['leopard_id'] = participant_ids['leopard']
 
         affective_team_physio_task = _combine_affective_physio_task(
             affective_task_team_df,

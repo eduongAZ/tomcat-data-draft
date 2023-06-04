@@ -105,10 +105,10 @@ class Minecraft:
                    metadata_path: str,
                    minecraft_metadata_path: str,
                    minecraft_physio_name_filepath: dict[str, str],
-                   num_increments: int = 5780):
+                   frequency: float):
         """
         Create a FingerTapping object from a metadata dictionary
-        :param num_increments: number of time series increments
+        :param frequency: frequency of the physio data
         :param minecraft_physio_name_filepath: minecraft physio name-filepath mapping
         :param minecraft_metadata_path: minecraft metadata file path
         :param metadata_path: json file metadata path
@@ -132,8 +132,13 @@ class Minecraft:
             physio_id_filepath,
             start_time,
             end_time,
-            num_increments
+            frequency
         )
+
+        minecraft_physio['experiment_id'] = metadata['experiment']
+        minecraft_physio['lion_id'] = participant_ids['lion']
+        minecraft_physio['tiger_id'] = participant_ids['tiger']
+        minecraft_physio['leopard_id'] = participant_ids['leopard']
 
         minecraft_physio_task = _combine_minecraft_physio_task(
             minecraft_task_df,
