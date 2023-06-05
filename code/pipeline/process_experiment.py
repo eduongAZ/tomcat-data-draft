@@ -332,7 +332,7 @@ def _process_minecraft(path_to_task: str,
                        output_path: str,
                        frequency: float):
     os.makedirs(os.path.join(output_path, experiment, 'report'), exist_ok=True)
-    log_file_path = os.path.join(output_path, experiment, 'report', 'minecraft.txt')
+    log_file_path = os.path.join(output_path, experiment, 'report', 'minecraft_saturn_a.txt')
     log_file = open(log_file_path, "w")
 
     log_file.write(f"# Experiment: {experiment}\n\nOutput of the program:\n\n```\n")

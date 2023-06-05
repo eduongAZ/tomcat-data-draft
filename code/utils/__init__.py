@@ -1,3 +1,4 @@
+from .find_files import find_files
 from .iso_from_unix_time import iso_from_unix_time
 from .linear_average import linear_average
 from .linear_interpolation import linear_interpolation
@@ -10,5 +11,6 @@ __all__ = [
     'linear_interpolation',
     'linear_average',
     'iso_from_unix_time',
-    'rename_column_id_computer'
+    'rename_column_id_computer',
+    'find_files'
 ]

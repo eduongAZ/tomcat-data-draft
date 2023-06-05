@@ -103,8 +103,8 @@ class Minecraft:
         """
         Create a FingerTapping object from a metadata dictionary
         :param frequency: frequency of the physio data
-        :param minecraft_physio_name_filepath: minecraft physio name-filepath mapping
-        :param minecraft_metadata_path: minecraft metadata file path
+        :param minecraft_physio_name_filepath: minecraft_saturn_a physio name-filepath mapping
+        :param minecraft_metadata_path: minecraft_saturn_a metadata file path
         :param metadata_path: json file metadata path
         :return: FingerTapping object
         """
