@@ -91,8 +91,8 @@ def prepare_minecraft(path_to_task: str,
                       output_file: TextIO | None = None) -> dict:
     output = {}
 
-    # Identify the minecraft missions
-    path_to_minecraft = os.path.join(path_to_task, experiment, 'minecraft')
+    # Identify the minecraft_saturn_a missions
+    path_to_minecraft = os.path.join(path_to_task, experiment, 'minecraft_saturn_a')
     minecraft_missions = _identify_missions(path_to_minecraft)
 
     for mission, path_to_metadata in minecraft_missions.items():

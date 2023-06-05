@@ -20,6 +20,10 @@ def get_physio_correlations_and_scores(
                             any(sub_string in col for sub_string in channels)]
         physio_task_df = physio_task_df.dropna(subset=columns_to_check)
 
+        # Continue if there are no rows left
+        if len(physio_task_df) < 2:
+            continue
+
         # Compute correlations
         for channel in channels:
             computers = ["lion", "tiger", "leopard"]

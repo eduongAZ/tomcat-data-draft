@@ -1,6 +1,27 @@
-
 EEG_CHANNELS = [
-    # TODO: Add EEG channels
+    "AFF1h",
+    "F7",
+    "FC5",
+    "C3",
+    "T7",
+    "TP9",
+    "Pz",
+    "P3",
+    "P7",
+    "O1",
+    "O2",
+    "P8",
+    "P4",
+    "TP10",
+    "Cz",
+    "C4",
+    "T8",
+    "FC6",
+    "FCz",
+    "F8",
+    "AFF2h",
+    "AUX_GSR",
+    "AUX_EKG"
 ]
 
 NIRS_CHANNELS = [
