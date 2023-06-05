@@ -10,13 +10,13 @@ echo "Organizing baseline tasks ..."
 
 # Iterate through the list of folders
 for folder in "${FOLDERS[@]}"; do
-    source="$data_location/$folder/baseline_tasks/*"
+    source="$data_location/$folder/baseline_tasks/"
     destination="$data_output_dir/$folder/"
 
     mkdir -p "$destination"
 
     echo "Syncing $source to $destination"
-    cp -r "$source" "$destination"
+    cp -r "$source"* "$destination"
 done
 
 echo "Organizing minecraft tasks ..."
