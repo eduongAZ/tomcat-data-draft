@@ -16,7 +16,7 @@ for folder in "${FOLDERS[@]}"; do
     mkdir -p "$destination"
 
     echo "Syncing $source to $destination"
-    rsync -avP "$source" "$destination"
+    cp -r "$source" "$destination"
 done
 
 echo "Organizing minecraft tasks ..."
@@ -29,5 +29,5 @@ for folder in "${FOLDERS[@]}"; do
     mkdir -p "$destination"
 
     echo "Syncing $source to $destination"
-    rsync -avP "$source" "$destination"
+    cp -r "$source" "$destination"
 done
