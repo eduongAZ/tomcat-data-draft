@@ -12,10 +12,16 @@ fi
 # Retrieve a list of directory names
 directories=("$path"/*)
 
-# Iterate through the list and extract the folder names
+# Collect the folder names
+folder_names=()
 for directory in "${directories[@]}"; do
   if [[ -d "$directory" ]]; then
     folder_name=$(basename "$directory")
-    echo "$folder_name"
+    folder_names+=("$folder_name")
   fi
+done
+
+# Print the folder names
+for folder_name in "${folder_names[@]}"; do
+  echo "$folder_name"
 done
