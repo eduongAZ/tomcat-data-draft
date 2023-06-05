@@ -11,7 +11,7 @@ echo "Organizing baseline tasks ..."
 # Iterate through the list of folders
 for folder in "${FOLDERS[@]}"; do
     source="$data_location/$folder/baseline_tasks/"
-    destination="$data_output_dir/$folder"
+    destination="$data_output_dir/$folder/"
 
     mkdir -p "$destination"
 
