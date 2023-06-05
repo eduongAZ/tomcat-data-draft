@@ -2,7 +2,7 @@
 
 # SSH connection details
 remote_host="gauss"
-data_location="/Users/ericduong/Documents/ToMCAT/tomcat-data-draft/data/processed/nirs"
+data_location="/Users/ericduong/Documents/ToMCAT/tomcat-data-draft/data/processed/eeg"
 data_output_dir="/tomcat/data/derived/drafts/draft_2023_06_04_16"
 
 # More details on folders to sync and SSH conection
