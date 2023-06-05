@@ -29,5 +29,5 @@ for folder in "${FOLDERS[@]}"; do
     mkdir -p "$destination"
 
     echo "Syncing $source to $destination"
-    cp -r "$source" "$destination"
+    cp -r "$source"* "$destination"
 done
