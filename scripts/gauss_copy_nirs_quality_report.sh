@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Specify the path
-path="/tomcat/data/derived/drafts/draft_2023_06_05_11"
+path="/tomcat/data/derived/drafts/draft_2023_06_05_11/nirs"
 
 # Check if the path exists and is a directory
 if [[ ! -d "$path" ]]; then
