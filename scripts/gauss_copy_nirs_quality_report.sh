@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Specify the path
-path="/tomcat/data/derived/drafts/draft_2023_06_05_11/nirs"
+path="/path/to/directory"
 
 # Check if the path exists and is a directory
 if [[ ! -d "$path" ]]; then
@@ -12,9 +12,10 @@ fi
 # Retrieve a list of directory names
 directories=("$path"/*)
 
-# Iterate through the list and print each directory name
+# Iterate through the list and extract the folder names
 for directory in "${directories[@]}"; do
   if [[ -d "$directory" ]]; then
-    echo "$directory"
+    folder_name=$(basename "$directory")
+    echo "$folder_name"
   fi
 done
