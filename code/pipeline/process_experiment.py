@@ -400,78 +400,78 @@ def process_experiment(path_to_task: str,
                     frequency
                 )
             ),
-            # multiprocessing.Process(
-            #     target=_process_finger_tapping,
-            #     args=(
-            #         path_to_task,
-            #         path_to_physio,
-            #         path_to_experiment_info,
-            #         experiment,
-            #         physio_type,
-            #         output_path,
-            #         frequency
-            #     )
-            # ),
-            # multiprocessing.Process(
-            #     target=_process_affective_individual,
-            #     args=(
-            #         path_to_task,
-            #         path_to_physio,
-            #         path_to_experiment_info,
-            #         experiment,
-            #         physio_type,
-            #         output_path,
-            #         frequency
-            #     )
-            # ),
-            # multiprocessing.Process(
-            #     target=_process_affective_team,
-            #     args=(
-            #         path_to_task,
-            #         path_to_physio,
-            #         path_to_experiment_info,
-            #         experiment,
-            #         physio_type,
-            #         output_path,
-            #         frequency
-            #     )
-            # ),
-            # multiprocessing.Process(
-            #     target=_process_ping_pong_competitive,
-            #     args=(
-            #         path_to_task,
-            #         path_to_physio,
-            #         path_to_experiment_info,
-            #         experiment,
-            #         physio_type,
-            #         output_path,
-            #         frequency
-            #     )
-            # ),
-            # multiprocessing.Process(
-            #     target=_process_ping_pong_cooperative,
-            #     args=(
-            #         path_to_task,
-            #         path_to_physio,
-            #         path_to_experiment_info,
-            #         experiment,
-            #         physio_type,
-            #         output_path,
-            #         frequency
-            #     )
-            # ),
-            # multiprocessing.Process(
-            #     target=_process_minecraft,
-            #     args=(
-            #         path_to_task,
-            #         path_to_physio,
-            #         path_to_experiment_info,
-            #         experiment,
-            #         physio_type,
-            #         output_path,
-            #         frequency
-            #     )
-            # ),
+            multiprocessing.Process(
+                target=_process_finger_tapping,
+                args=(
+                    path_to_task,
+                    path_to_physio,
+                    path_to_experiment_info,
+                    experiment,
+                    physio_type,
+                    output_path,
+                    frequency
+                )
+            ),
+            multiprocessing.Process(
+                target=_process_affective_individual,
+                args=(
+                    path_to_task,
+                    path_to_physio,
+                    path_to_experiment_info,
+                    experiment,
+                    physio_type,
+                    output_path,
+                    frequency
+                )
+            ),
+            multiprocessing.Process(
+                target=_process_affective_team,
+                args=(
+                    path_to_task,
+                    path_to_physio,
+                    path_to_experiment_info,
+                    experiment,
+                    physio_type,
+                    output_path,
+                    frequency
+                )
+            ),
+            multiprocessing.Process(
+                target=_process_ping_pong_competitive,
+                args=(
+                    path_to_task,
+                    path_to_physio,
+                    path_to_experiment_info,
+                    experiment,
+                    physio_type,
+                    output_path,
+                    frequency
+                )
+            ),
+            multiprocessing.Process(
+                target=_process_ping_pong_cooperative,
+                args=(
+                    path_to_task,
+                    path_to_physio,
+                    path_to_experiment_info,
+                    experiment,
+                    physio_type,
+                    output_path,
+                    frequency
+                )
+            ),
+            multiprocessing.Process(
+                target=_process_minecraft,
+                args=(
+                    path_to_task,
+                    path_to_physio,
+                    path_to_experiment_info,
+                    experiment,
+                    physio_type,
+                    output_path,
+                    frequency
+                )
+            ),
         ]
 
         for process in processes:
