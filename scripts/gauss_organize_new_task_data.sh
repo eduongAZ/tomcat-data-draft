@@ -1,6 +1,6 @@
 #!/bin/bash
 
-data_location="/space/calebshibu/Neurips_06_06_23_15"
+data_location="/space/calebshibu/Neurips_06_05_23_16"
 original_data_location="/tomcat/data/raw/LangLab/experiments/study_3_pilot/group"
 data_output_dir="/space/eduong/exp_tasks"
 
