@@ -31,7 +31,7 @@ echo "Organizing minecraft tasks ..."
 
 # Iterate through the list of folders
 for folder in "${NEW_FOLDERS[@]}"; do
-    source="$data_location/$folder/minecraft/"
+    source="$original_data_location/$folder/minecraft/"
     destination="$data_output_dir/$folder/minecraft"
 
     mkdir -p "$destination"
