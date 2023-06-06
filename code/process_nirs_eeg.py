@@ -1,7 +1,7 @@
 from pipeline import process_experiment
 
 path_to_task = '/space/eduong/exp_tasks'
-path_to_physio = '/space/rchamplin/Neurips/rerun_2023_06_03'
+path_to_physio = '/space/rchamplin/Neurips/new_pipeline_2023_06_05'
 path_to_experiment_info = '/space/eduong/exp_info'
 output_dir = '/tomcat/data/derived/drafts/draft_2023_06_05_11'
 
