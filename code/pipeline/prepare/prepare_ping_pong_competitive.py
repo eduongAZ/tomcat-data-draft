@@ -26,7 +26,7 @@ def prepare_ping_pong_competitive(path_to_task: str,
     participant_ids['cheetah'] = 'exp'
 
     # getting all competitive tasks for the experiment
-    matching_file_path = os.path.join(path_to_task, experiment, 'ping_pong', '*competitive_*.csv')
+    matching_file_path = os.path.join(path_to_task, experiment, 'ping_pong', 'competitive_*.csv')
     competitive_tasks = glob.glob(matching_file_path)
     if not competitive_tasks:
         raise FileDoesNotExistError(matching_file_path)
@@ -41,10 +41,7 @@ def prepare_ping_pong_competitive(path_to_task: str,
             continue
 
         # extracting match number
-        if "PingPong" in task:
-            match_num = task.split('/')[-1].split('_')[2]
-        else:
-            match_num = task.split('/')[-1].split('_')[1]
+        match_num = task.split('/')[-1].split('_')[1]
 
         # get directory name from the csv file path
         directory = os.path.dirname(task)
