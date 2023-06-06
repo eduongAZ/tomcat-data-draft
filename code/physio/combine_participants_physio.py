@@ -21,8 +21,11 @@ def _sync_data_to_time_series(df: pd.DataFrame, time_series: list[float]) -> pd.
     # merge_asof to find the nearest entry at or after each time
     df_after = pd.merge_asof(sync_df, df, on='unix_time', direction='forward')
 
-    columns = df.columns.drop(['Unnamed: 0',
-                               'human_readable_time',
+    # Drop column Unnamed: 0 if it exists
+    if 'Unnamed: 0' in df.columns:
+        df = df.drop(columns=['Unnamed: 0'])
+
+    columns = df.columns.drop(['human_readable_time',
                                'unix_time',
                                'event_type',
                                'original_unix_time'])
