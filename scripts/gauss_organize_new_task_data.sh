@@ -24,7 +24,7 @@ for folder in "${NEW_FOLDERS[@]}"; do
     original_source="$original_data_location/$folder/baseline_tasks/"
 
     echo "Syncing $original_source to $destination"
-    rsync -avm --include='*/' --include='*_metadata.json' --exclude='*' "$original_source" "$dest"
+    rsync -avii --include='*/' --include='*_metadata.json' --exclude='*' "$original_source" "$dest"
 done
 
 echo "Organizing minecraft tasks ..."
