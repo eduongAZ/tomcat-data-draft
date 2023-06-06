@@ -67,6 +67,13 @@ class PingPongCompetitive:
 
         ping_pong_task_df = read_csv_file(ping_pong_task_csv_path, delimiter=';')
 
+        # Detect if there is a column called lsl_timestamp. If so, remove the existing time column
+        # and rename the lsl_timestamp column to time
+        if 'lsl_timestamp' in ping_pong_task_df.columns:
+            ping_pong_task_df = ping_pong_task_df.drop(columns=['time'])
+            ping_pong_task_df = ping_pong_task_df.rename(
+                columns={'lsl_timestamp': 'time'})
+
         start_time = ping_pong_task_df['time'].iloc[0]
         end_time = ping_pong_task_df['time'].iloc[-1]
 

@@ -82,6 +82,13 @@ class AffectiveTaskTeam:
         # Read affective task team data
         affective_task_team_df = read_csv_file(affective_task_team_csv_path, delimiter=';')
 
+        # Detect if there is a column called lsl_timestamp. If so, remove the existing time column
+        # and rename the lsl_timestamp column to time
+        if 'lsl_timestamp' in affective_task_team_df.columns:
+            affective_task_team_df = affective_task_team_df.drop(columns=['time'])
+            affective_task_team_df = affective_task_team_df.rename(
+                columns={'lsl_timestamp': 'time'})
+
         start_time = affective_task_team_df['time'].iloc[0]
         end_time = affective_task_team_df['time'].iloc[-1]
 

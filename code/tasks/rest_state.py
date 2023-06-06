@@ -55,6 +55,12 @@ class RestState:
         # Read rest state task data
         rest_state_task_df = read_csv_file(rest_state_csv_path, delimiter=';')
 
+        # Detect if there is a column called lsl_timestamp. If so, remove the existing time column
+        # and rename the lsl_timestamp column to time
+        if 'lsl_timestamp' in rest_state_task_df.columns:
+            rest_state_task_df = rest_state_task_df.drop(columns=['time'])
+            rest_state_task_df = rest_state_task_df.rename(columns={'lsl_timestamp': 'time'})
+
         start_time = rest_state_task_df.query('event_type == "start_rest_state"').iloc[0]['time']
         end_time = rest_state_task_df.query('event_type == "end_rest_state"').iloc[0]['time']
 
