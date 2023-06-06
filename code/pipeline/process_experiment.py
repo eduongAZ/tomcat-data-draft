@@ -34,14 +34,16 @@ def _process_rest_state(path_to_task: str,
             output_file=log_file
         )
 
-        rest_state = RestState.from_files(
-            rest_state_data['info'],
-            rest_state_data['task_csv_path'],
-            rest_state_data['physio_name_path'],
-            frequency=frequency
-        )
+        print(rest_state_data)
 
-        rest_state.write_physio_data_csv(output_path + '/' + experiment)
+        # rest_state = RestState.from_files(
+        #     rest_state_data['info'],
+        #     rest_state_data['task_csv_path'],
+        #     rest_state_data['physio_name_path'],
+        #     frequency=frequency
+        # )
+        #
+        # rest_state.write_physio_data_csv(output_path + '/' + experiment)
     except FileDoesNotExistError as e:
         log_file.write(str(e) + '\n')
 
