@@ -26,7 +26,7 @@ def prepare_ping_pong_competitive(path_to_task: str,
     participant_ids['cheetah'] = 'exp'
 
     # getting all competitive tasks for the experiment
-    matching_file_path = os.path.join(path_to_task, experiment, 'ping_pong', 'competitive_*.csv')
+    matching_file_path = os.path.join(path_to_task, experiment, 'ping_pong', '*competitive_*.csv')
     competitive_tasks = glob.glob(matching_file_path)
     if not competitive_tasks:
         raise FileDoesNotExistError(matching_file_path)
