@@ -8,7 +8,8 @@ from sklearn.metrics import r2_score
 
 def linear_fit(correlation_per_channel: dict[str, list[any]],
                scores: list[any],
-               output_file: str | None = None):
+               output_file: str | None = None,
+               absolute_value_correlations: bool = False):
     # ensure valid input
     for correlations in correlation_per_channel.values():
         assert len(correlations) == len(scores)
@@ -29,6 +30,10 @@ def linear_fit(correlation_per_channel: dict[str, list[any]],
         lr = LinearRegression()
 
         X = np.array(values)[:, None]
+
+        if absolute_value_correlations:
+            X = np.abs(X)
+
         lr.fit(X, scores)
 
         y_hat = lr.predict(X)
