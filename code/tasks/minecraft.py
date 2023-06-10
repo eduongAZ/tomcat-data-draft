@@ -116,6 +116,13 @@ class Minecraft:
         # Read finger tapping task data
         minecraft_task_df = _read_metadata_file(minecraft_metadata_path)
 
+        # Detect if there is a column called lsl_timestamp. If so, remove the existing time column
+        # and rename the lsl_timestamp column to time
+        if 'lsl_timestamp' in minecraft_task_df.columns:
+            minecraft_task_df = minecraft_task_df.drop(columns=['time'])
+            minecraft_task_df = minecraft_task_df.rename(
+                columns={'lsl_timestamp': 'time'})
+
         if len(minecraft_task_df) == 0:
             raise ValueError("No task data found in metadata file")
 

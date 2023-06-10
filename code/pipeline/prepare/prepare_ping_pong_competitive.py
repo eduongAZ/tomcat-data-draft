@@ -43,8 +43,13 @@ def prepare_ping_pong_competitive(path_to_task: str,
         # extracting match number
         match_num = task.split('/')[-1].split('_')[1]
 
-        # getting corresponding metadata
-        with open(task.replace('.csv', '_metadata.json')) as f:
+        # get directory name from the csv file path
+        directory = os.path.dirname(task)
+        # pattern to match
+        pattern = os.path.join(directory, f"competitive_{match_num}*.json")
+        # Use glob to find files that match the pattern
+        matching_file = glob.glob(pattern)[0]
+        with open(matching_file) as f:
             metadata = json.load(f)
 
         # Remove all other metadata fields except for left and right team

@@ -68,6 +68,13 @@ class FingerTapping:
         # Read finger tapping task data
         finger_tapping_task_df = read_csv_file(finger_tapping_csv_path, delimiter=';')
 
+        # Detect if there is a column called lsl_timestamp. If so, remove the existing time column
+        # and rename the lsl_timestamp column to time
+        if 'lsl_timestamp' in finger_tapping_task_df.columns:
+            finger_tapping_task_df = finger_tapping_task_df.drop(columns=['time'])
+            finger_tapping_task_df = finger_tapping_task_df.rename(
+                columns={'lsl_timestamp': 'time'})
+
         start_time = finger_tapping_task_df['time'].iloc[0]
         end_time = finger_tapping_task_df['time'].iloc[-1]
 
