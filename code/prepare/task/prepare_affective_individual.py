@@ -16,10 +16,9 @@ def prepare_affective_individual(task_data_path: str,
                                  interpolation_method: callable) -> tuple[dict[str, any], bool, str]:
     output = {}
 
-    # Create a dictionary and add info path
     experiment_info_file = os.path.join(experiment_info_path, experiment + "_info.json")
     if not check_file_exists(experiment_info_file):
-        return {}, False, f"{experiment_info_file} does not exist."
+        return {}, False, f"{experiment_info_file} does not exist.\n"
 
     with open(experiment_info_file, 'r') as f:
         participant_info = json.load(f)["participant_ids"]
@@ -55,4 +54,5 @@ def prepare_affective_individual(task_data_path: str,
 
         output[computer_name] = participant_dict
 
+    string_stream.write("Affective individual data prepared.\n")
     return output, True, string_stream.getvalue()

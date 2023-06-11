@@ -31,10 +31,10 @@ def prepare_affective_team(task_data_path: str,
     # Assume there's only one 'team' file in the directory
     task_csv_file = team_files[0] if team_files else None
     if task_csv_file is None:
-        return {}, False, f"No task csv file found in {task_csv_path}."
+        return {}, False, f"No task csv file found in {task_csv_path}\n"
     task_csv_file_path = os.path.join(task_csv_path, task_csv_file)
     if not check_file_exists(task_csv_file_path):
-        return {}, False, f"{task_csv_file_path} does not exist."
+        return {}, False, f"{task_csv_file_path} does not exist.\n"
     output['task_csv_path'] = task_csv_file_path
 
     # Add physio data paths

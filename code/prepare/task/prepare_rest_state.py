@@ -17,7 +17,7 @@ def prepare_rest_state(task_data_path: str,
     # Create a dictionary and add info path
     experiment_info_file = os.path.join(experiment_info_path, experiment + "_info.json")
     if not check_file_exists(experiment_info_file):
-        return {}, False, f"{experiment_info_file} does not exist."
+        return {}, False, f"{experiment_info_file} does not exist\n"
     output['info'] = experiment_info_file
 
     # Add task csv path
@@ -29,10 +29,10 @@ def prepare_rest_state(task_data_path: str,
     # We assume there's only one file in the directory
     task_csv_file = only_files[0] if only_files else None
     if task_csv_file is None:
-        return {}, False, f"No task csv file found in {task_csv_path}."
+        return {}, False, f"No task csv file found in {task_csv_path}\n"
     task_csv_file_path = os.path.join(task_csv_path, task_csv_file)
     if not check_file_exists(task_csv_file_path):
-        return {}, False, f"{task_csv_file_path} does not exist."
+        return {}, False, f"{task_csv_file_path} does not exist\n"
     output['task_csv_path'] = task_csv_file_path
 
     # Add physio data paths
@@ -46,12 +46,12 @@ def prepare_rest_state(task_data_path: str,
         physio_file = f"{computer_name}_{physio_type}_rest_state.csv"
         physio_name_path = os.path.join(physio_data_exp_dir, physio_file)
         if not check_file_exists(physio_name_path):
-            string_stream.write(f"{physio_name_path} does not exist.\n")
+            string_stream.write(f"{physio_name_path} does not exist\n")
             continue
         physio_names_paths[computer_name] = physio_name_path
     # If no physio data found, return failure
     if len(physio_names_paths) == 0:
-        string_stream.write(f"No physio data found for {experiment}.\n")
+        string_stream.write(f"No physio data found for {experiment}\n")
         return {}, False, string_stream.getvalue()
     output['physio_name_path'] = physio_names_paths
 
