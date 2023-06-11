@@ -2,7 +2,7 @@ from common import ReportWriter
 from io import StringIO
 import os
 
-from .task import prepare_rest_state
+from .task import prepare_rest_state, prepare_finger_tapping
 
 
 def prepare_task_data(task_data_path: str,
@@ -33,16 +33,28 @@ def prepare_task_data(task_data_path: str,
                 experiment,
                 physio_type,
                 synchronization_frequency,
-                output_dir,
+                os.path.join(output_dir, experiment, physio_type),
                 physio_type_info['interpolation_method']
             )
             string_stream.write(message)
             if status:
                 experiments_tasks_data[physio_type][experiment]['rest_state'] = task_data
 
+            # Rest state
             string_stream.write(f'[{experiment}] Processing finger tapping\n')
-
-            experiments_tasks_data[physio_type][experiment]['finger_tapping'] = {}
+            task_data, status, message = prepare_finger_tapping(
+                task_data_path,
+                os.path.join(physio_data_path, physio_type),
+                experiment_info_path,
+                experiment,
+                physio_type,
+                synchronization_frequency,
+                os.path.join(output_dir, experiment, physio_type),
+                physio_type_info['interpolation_method']
+            )
+            string_stream.write(message)
+            if status:
+                experiments_tasks_data[physio_type][experiment]['finger_tapping'] = task_data
 
             string_stream.write(f'[{experiment}] Processing affective individual\n')
 
