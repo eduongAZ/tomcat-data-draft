@@ -1,7 +1,7 @@
 import os
+from io import StringIO
 
 from .utils import check_file_exists
-from io import StringIO
 
 
 def prepare_finger_tapping(task_data_path: str,
@@ -62,8 +62,8 @@ def prepare_finger_tapping(task_data_path: str,
     output['output_dir'] = output_dir
 
     # Add output log path
-    output_log_path = os.path.join(output_dir, "report", "process_finger_tapping_report.txt")
-    output['output_log_path'] = output_log_path
+    output_log_dir = os.path.join(output_dir, "report")
+    output['output_log_dir'] = output_log_dir
 
     # Add interpolation method
     output['interpolation_method'] = interpolation_method
