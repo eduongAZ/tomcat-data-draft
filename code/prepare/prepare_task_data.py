@@ -2,7 +2,7 @@ from common import ReportWriter
 from io import StringIO
 import os
 
-from .task import prepare_rest_state, prepare_finger_tapping, prepare_affective_team
+from .task import prepare_rest_state, prepare_finger_tapping, prepare_affective_team, prepare_ping_pong_cooperative
 
 
 def prepare_task_data(task_data_path: str,
@@ -82,7 +82,19 @@ def prepare_task_data(task_data_path: str,
 
             string_stream.write(f'[{experiment}] Processing ping pong cooperative\n')
 
-            experiments_tasks_data[physio_type][experiment]['ping_pong_cooperative'] = {}
+            task_data, status, message = prepare_ping_pong_cooperative(
+                task_data_path,
+                os.path.join(physio_data_path, physio_type),
+                experiment_info_path,
+                experiment,
+                physio_type,
+                synchronization_frequency,
+                os.path.join(output_dir, experiment, physio_type),
+                physio_type_info['interpolation_method']
+            )
+            string_stream.write(message)
+            if status:
+                experiments_tasks_data[physio_type][experiment]['ping_pong_cooperative'] = task_data
 
             string_stream.write(f'[{experiment}] Processing minecraft training\n')
 
