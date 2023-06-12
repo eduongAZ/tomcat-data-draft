@@ -23,7 +23,7 @@ if __name__ == "__main__":
         task_data_path,
         physio_data_path,
         experiment_info_path,
-        output_dir,
+        physio_type_output_dir,
         synchronization_frequency,
         report_writer,
         physio_type_data,
