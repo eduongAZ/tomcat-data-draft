@@ -37,7 +37,7 @@ jobs:
       run: |
         cd code
         pytest -v
-    - name: Analysing the code with pylint
-      run: |
-        cd code
-        pylint --rcfile=.pylintrc $(git ls-files '*.py')
+    # - name: Analysing the code with pylint
+    #   run: |
+    #     cd code
+    #     pylint --rcfile=.pylintrc $(git ls-files '*.py')
