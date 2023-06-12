@@ -8,14 +8,17 @@ from process import process_task_data
 
 if __name__ == "__main__":
     synchronization_frequency = 20.0
-    report_writer = ReportWriter(os.path.join(output_dir, 'nirs', 'report'))
+    physio_type_output_dir = os.path.join(output_dir, 'nirs')
+    os.makedirs(physio_type_output_dir, exist_ok=True)
+
+    report_writer = ReportWriter(os.path.join(physio_type_output_dir, 'report'))
     physio_type_data = {
         "nirs": {
             "interpolation_method": linear_interpolation
         }
     }
 
-    os.makedirs(output_dir + '/report', exist_ok=True)
+    os.makedirs(physio_type_output_dir + '/report', exist_ok=True)
     experiments_tasks_data = prepare_task_data(
         task_data_path,
         physio_data_path,

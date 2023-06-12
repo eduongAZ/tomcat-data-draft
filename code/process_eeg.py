@@ -8,14 +8,17 @@ from process import process_task_data
 
 if __name__ == "__main__":
     synchronization_frequency = 500.0
-    report_writer = ReportWriter(os.path.join(output_dir, 'eeg,' 'report'))
+    physio_type_output_dir = os.path.join(output_dir, 'eeg')
+    os.makedirs(physio_type_output_dir, exist_ok=True)
+
+    report_writer = ReportWriter(os.path.join(physio_type_output_dir, 'report'))
     physio_type_data = {
         "eeg": {
             "interpolation_method": linear_interpolation
         }
     }
 
-    os.makedirs(output_dir + '/report', exist_ok=True)
+    os.makedirs(physio_type_output_dir + '/report', exist_ok=True)
     experiments_tasks_data = prepare_task_data(
         task_data_path,
         physio_data_path,
