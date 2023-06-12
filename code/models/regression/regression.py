@@ -1,4 +1,4 @@
-from utils import find_files
+from common import find_files
 from .utils import get_physio_correlations_and_scores, linear_fit, plot_regression_per_channel
 
 
