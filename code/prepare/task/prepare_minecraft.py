@@ -129,7 +129,6 @@ def prepare_minecraft(task_data_path: str,
 
             for computer in ["lion", "tiger", "leopard"]:
                 physio_file_path = os.path.join(physio_data_path,
-                                                physio_type,
                                                 experiment,
                                                 f"{computer}_{physio_type}_{mission}.csv")
                 if not check_file_exists(physio_file_path):

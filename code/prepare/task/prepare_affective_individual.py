@@ -36,7 +36,6 @@ def prepare_affective_individual(task_data_path: str,
         physio_information = {}
         for physio_type, physio_type_info in physio_type_data.items():
             physio_csv_path = os.path.join(physio_data_path,
-                                           physio_type,
                                            experiment,
                                            f"{computer_name}_{physio_type}_affective_task_individual.csv")
             if not check_file_exists(physio_csv_path):
