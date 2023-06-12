@@ -5,6 +5,7 @@ from tqdm import tqdm
 from common import write_df
 from .process_affective_team import process_affective_team
 from .process_finger_tapping import process_finger_tapping
+from .process_ping_pong_competitive import process_ping_pong_competitive
 from .process_rest_state import process_rest_state
 
 
@@ -41,6 +42,17 @@ def processing_affective_team(task_data: dict[str, any]):
     write_df(task_df, os.path.join(task_data['output_dir'], f'affective_team_physio_task.csv'))
 
 
+def processing_ping_pong_competitive(task_data: dict[str, any], match_name: str):
+    task_df = process_ping_pong_competitive(
+        task_data['info'],
+        task_data['task_csv_path'],
+        task_data['physio'],
+        task_data['frequency']
+    )
+    os.makedirs(task_data['output_dir'], exist_ok=True)
+    write_df(task_df, os.path.join(task_data['output_dir'], f'{match_name}_physio_task.csv'))
+
+
 def process_task_data(task_data: dict[str, any]):
     pbar = tqdm(task_data.items())
     for exp, exp_data in pbar:
@@ -54,3 +66,9 @@ def process_task_data(task_data: dict[str, any]):
 
         if "affective_team" in exp_data:
             processing_affective_team(exp_data["affective_team"])
+
+        if "ping_pong_competitive_0" in exp_data:
+            processing_ping_pong_competitive(exp_data["ping_pong_competitive_0"], "ping_pong_competitive_0")
+
+        if "ping_pong_competitive_1" in exp_data:
+            processing_ping_pong_competitive(exp_data["ping_pong_competitive_1"], "ping_pong_competitive_1")
