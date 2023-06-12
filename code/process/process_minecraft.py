@@ -1,9 +1,6 @@
-from bisect import bisect_right
-
-import numpy as np
 import pandas as pd
 
-from common import read_csv_file, read_json_file, iso_from_unix_time
+from common import read_json_file, iso_from_unix_time, read_metadata_file
 from .synchronize_physio import synchronize_physio
 
 
@@ -16,51 +13,40 @@ def _get_start_end_time(task_df: pd.DataFrame) -> tuple[float, float]:
 
 def _combine_physio_task(task_df: pd.DataFrame,
                          physio_df: pd.DataFrame) -> pd.DataFrame:
-    # Reset the index
-    task_df = task_df.reset_index()
-
     # Save the original 'unix_time' column
     original_unix_time = physio_df['unix_time'].copy()
 
     # Ensure that 'unix_time' and 'time' columns are in datetime format
-    physio_df['unix_time'] = pd.to_datetime(physio_df['unix_time'], unit='s')
+    physio_df['unix_time'] = pd.to_datetime(physio_df['unix_time'],
+                                            unit='s')
     task_df['time'] = pd.to_datetime(task_df['time'], unit='s')
 
-    # Sort both dataframes by time
-    physio_df = physio_df.sort_values(by='unix_time')
-    task_df = task_df.sort_values(by='time')
-
-    # Get the 'unix_time' values as a list for binary search
-    unix_times = physio_df['unix_time'].tolist()
-
-    # Rename columns to avoid duplicates
-    task_df.columns = ['task_' + col for col in task_df.columns]
-
-    # Initialize new columns in the brain data and set as NaN
-    for col in task_df.columns:
-        physio_df[col] = np.nan
-
-    for i, row in task_df.iterrows():
-        # Find the index of the closest brain data entry which is before the current task data
-        idx = bisect_right(unix_times, row['task_time']) - 1
-
-        if idx >= 0:
-            # Assign the task data to this brain data entry
-            for col in task_df.columns:
-                physio_df.loc[physio_df.index[idx], col] = row[col]
+    # Use merge_asof to merge the dataframes based on time, assigning the task data to the closest
+    # physio data entry that is before it.
+    merged_df = pd.merge_asof(physio_df,
+                              task_df,
+                              left_on='unix_time',
+                              right_on='time',
+                              direction='backward',
+                              suffixes=('_physio_data', '_task_data'))
 
     # Restore the original 'unix_time' column
-    physio_df['unix_time'] = original_unix_time
+    merged_df['unix_time'] = original_unix_time
 
-    return physio_df
+    # Drop the 'time' column from the task data as it's redundant now
+    merged_df = merged_df.drop(columns=['time'])
+
+    return merged_df
 
 
-def process_affective_team(exp_info_path: str,
-                           task_csv_path: str,
-                           physio_data: dict[str, any],
-                           frequency: float) -> tuple[any, bool, str]:
+def process_minecraft(exp_info_path: str,
+                      task_metadata_path: str,
+                      physio_data: dict[str, any],
+                      frequency: float) -> tuple[any, bool, str]:
     # Read task data
-    task_df = read_csv_file(task_csv_path, delimiter=';')
+    task_df = read_metadata_file(task_metadata_path)
+    if len(task_df) == 0:
+        return None, False, 'Minecraft task data is empty'
 
     # Detect if there is a column called lsl_timestamp. If so, remove the existing time column
     # and rename the lsl_timestamp column to time
@@ -94,4 +80,4 @@ def process_affective_team(exp_info_path: str,
 
     physio_task = physio_task.set_index('unix_time')
 
-    return physio_task, True, "Processed affective team data"
+    return physio_task, True, "Processed minecraft data"

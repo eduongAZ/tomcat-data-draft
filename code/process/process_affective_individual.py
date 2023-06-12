@@ -55,10 +55,12 @@ def _combine_physio_task(task_df: pd.DataFrame,
     return physio_df
 
 
-def process_affective_team(exp_info_path: str,
-                           task_csv_path: str,
-                           physio_data: dict[str, any],
-                           frequency: float) -> tuple[any, bool, str]:
+def process_affective_individual(exp_info_path: str,
+                                 task_csv_path: str,
+                                 physio_data: dict[str, any],
+                                 frequency: float,
+                                 computer_name: str,
+                                 participant_id: str) -> tuple[any, bool, str]:
     # Read task data
     task_df = read_csv_file(task_csv_path, delimiter=';')
 
@@ -76,9 +78,7 @@ def process_affective_team(exp_info_path: str,
 
     exp_info = read_json_file(exp_info_path)
     combined_physio['experiment_id'] = exp_info['experiment']
-    combined_physio['lion_id'] = exp_info['participant_ids']['lion']
-    combined_physio['tiger_id'] = exp_info['participant_ids']['tiger']
-    combined_physio['leopard_id'] = exp_info['participant_ids']['leopard']
+    combined_physio[f'{computer_name}_id'] = participant_id
 
     physio_task = _combine_physio_task(
         task_df,
@@ -94,4 +94,4 @@ def process_affective_team(exp_info_path: str,
 
     physio_task = physio_task.set_index('unix_time')
 
-    return physio_task, True, "Processed affective team data"
+    return physio_task, True, "Processed affective individual data"

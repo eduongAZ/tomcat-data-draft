@@ -42,7 +42,7 @@ def _combine_physio_task(task_df: pd.DataFrame,
 def process_ping_pong_cooperative(exp_info_path: str,
                                   task_csv_path: str,
                                   physio_data: dict[str, any],
-                                  frequency: float):
+                                  frequency: float) -> tuple[any, bool, str]:
     # Read task data
     task_df = read_csv_file(task_csv_path, delimiter=';')
 
@@ -78,4 +78,4 @@ def process_ping_pong_cooperative(exp_info_path: str,
 
     physio_task = physio_task.set_index('unix_time')
 
-    return physio_task
+    return physio_task, True, "Processed ping pong cooperative data"

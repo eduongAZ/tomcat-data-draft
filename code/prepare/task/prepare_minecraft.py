@@ -162,7 +162,7 @@ def prepare_minecraft(task_data_path: str,
         }
 
         # Add the current mission to the output dictionary
-        output[mission] = mission_dict
+        output[f"minecraft_{mission}"] = mission_dict
 
     string_stream.write("Minecraft missions prepared.\n")
     return output, True, string_stream.getvalue()
