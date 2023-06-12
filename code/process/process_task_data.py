@@ -1,7 +1,8 @@
+import gc
 import os
+from multiprocessing import Pool
 
 from tqdm import tqdm
-from multiprocessing import Pool
 
 from common import write_df, ReportWriter
 from .process_affective_individual import process_affective_individual
@@ -29,6 +30,9 @@ def processing_rest_state(task_data: dict[str, any]):
         os.makedirs(task_data['output_dir'], exist_ok=True)
         write_df(task_df, os.path.join(task_data['output_dir'], f'rest_state_physio_task.csv'))
 
+    del task_df
+    gc.collect()
+
 
 def processing_finger_tapping(task_data: dict[str, any]):
     task_df, status, message = process_finger_tapping(
@@ -45,6 +49,9 @@ def processing_finger_tapping(task_data: dict[str, any]):
     if status:
         os.makedirs(task_data['output_dir'], exist_ok=True)
         write_df(task_df, os.path.join(task_data['output_dir'], f'finger_tapping_physio_task.csv'))
+
+    del task_df
+    gc.collect()
 
 
 def processing_affective_individual(task_data: dict[str, any]):
@@ -67,6 +74,9 @@ def processing_affective_individual(task_data: dict[str, any]):
         write_df(task_df,
                  os.path.join(task_data['output_dir'], f'{computer_name}_affective_individual_physio_task.csv'))
 
+    del task_df
+    gc.collect()
+
 
 def processing_affective_team(task_data: dict[str, any]):
     task_df, status, message = process_affective_team(
@@ -83,6 +93,9 @@ def processing_affective_team(task_data: dict[str, any]):
     if status:
         os.makedirs(task_data['output_dir'], exist_ok=True)
         write_df(task_df, os.path.join(task_data['output_dir'], f'affective_team_physio_task.csv'))
+
+    del task_df
+    gc.collect()
 
 
 def processing_ping_pong_competitive(task_data: dict[str, any], match_name: str):
@@ -101,6 +114,9 @@ def processing_ping_pong_competitive(task_data: dict[str, any], match_name: str)
         os.makedirs(task_data['output_dir'], exist_ok=True)
         write_df(task_df, os.path.join(task_data['output_dir'], f'{match_name}_physio_task.csv'))
 
+    del task_df
+    gc.collect()
+
 
 def processing_ping_pong_cooperative(task_data: dict[str, any]):
     task_df, status, message = process_ping_pong_cooperative(
@@ -118,6 +134,9 @@ def processing_ping_pong_cooperative(task_data: dict[str, any]):
         os.makedirs(task_data['output_dir'], exist_ok=True)
         write_df(task_df, os.path.join(task_data['output_dir'], f'ping_pong_cooperative_physio_task.csv'))
 
+    del task_df
+    gc.collect()
+
 
 def processing_minecraft(task_data: dict[str, any], mission_name: str):
     task_df, status, message = process_minecraft(
@@ -134,6 +153,9 @@ def processing_minecraft(task_data: dict[str, any], mission_name: str):
     if status:
         os.makedirs(task_data['output_dir'], exist_ok=True)
         write_df(task_df, os.path.join(task_data['output_dir'], f'{mission_name}_physio_task.csv'))
+
+    del task_df
+    gc.collect()
 
 
 def process_experiment(exp_data: dict[str, any]):
