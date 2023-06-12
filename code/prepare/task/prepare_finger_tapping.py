@@ -40,7 +40,7 @@ def prepare_finger_tapping(task_data_path: str,
     # Add physio data paths
     physio_information = {}
     for physio_type, physio_type_info in physio_type_data.items():
-        physio_data_exp_dir = os.path.join(physio_data_path, physio_type, experiment)
+        physio_data_exp_dir = os.path.join(physio_data_path, experiment)
         physio_names_paths = {}
 
         # For each computer

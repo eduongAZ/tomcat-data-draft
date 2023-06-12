@@ -68,7 +68,6 @@ def prepare_ping_pong_competitive(task_data_path: str,
                     # finding the physio data file for the participant
                     physio_file = os.path.join(
                         physio_data_path,
-                        physio_type,
                         experiment,
                         participant_name + f'_{physio_type}_ping_pong_competetive_' + match_num + '.csv'
                     )

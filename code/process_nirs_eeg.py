@@ -7,13 +7,16 @@ from prepare import prepare_task_data
 from process import process_task_data
 
 if __name__ == "__main__":
-    synchronization_frequency = 20.0
-    physio_type_output_dir = os.path.join(output_dir, 'nirs')
+    synchronization_frequency = 1000.0
+    physio_type_output_dir = os.path.join(output_dir, 'eeg_nirs')
     os.makedirs(physio_type_output_dir, exist_ok=True)
 
     report_writer = ReportWriter(os.path.join(physio_type_output_dir, 'report'))
     physio_type_data = {
         "nirs": {
+            "interpolation_method": linear_interpolation
+        },
+        "eeg": {
             "interpolation_method": linear_interpolation
         }
     }

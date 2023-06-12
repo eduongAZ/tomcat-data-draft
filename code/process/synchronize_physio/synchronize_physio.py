@@ -70,6 +70,8 @@ def synchronize_physio(physio_data: dict[str, any],
                 delimiter = '\t'
             elif ',' in first_line:
                 delimiter = ','
+            elif ';' in first_line:
+                delimiter = ';'
             else:
                 raise ValueError('Delimiter could not be detected')
 
