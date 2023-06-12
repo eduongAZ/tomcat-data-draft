@@ -1,7 +1,7 @@
-task_data_path = '/home/eric/Documents/projects/tomcat-data-draft/data/raw/tasks'
-physio_data_path = '/home/eric/Documents/projects/tomcat-data-draft/data/raw/physio'
-experiment_info_path = '/home/eric/Documents/projects/tomcat-data-draft/data/raw/info'
-output_dir = '/home/eric/Documents/projects/tomcat-data-draft/data/derived'
+task_data_path = '/space/eduong/exp_tasks'
+physio_data_path = '/space/rchamplin/Neurips/rerun_2023_06_11'
+experiment_info_path = '/space/eduong/exp_info'
+output_dir = '/tomcat/data/derived/drafts/draft_2023_06_12_13'
 
 experiments = [
     "exp_2022_09_30_10",  # Does not have physio data for minecraft
