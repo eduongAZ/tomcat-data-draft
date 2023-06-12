@@ -1,6 +1,7 @@
 import os
 
 from tqdm import tqdm
+from multiprocessing import Pool
 
 from common import write_df, ReportWriter
 from .process_affective_individual import process_affective_individual
@@ -135,43 +136,53 @@ def processing_minecraft(task_data: dict[str, any], mission_name: str):
         write_df(task_df, os.path.join(task_data['output_dir'], f'{mission_name}_physio_task.csv'))
 
 
-def process_task_data(task_data: dict[str, any]):
-    pbar = tqdm(task_data.items())
-    for exp, exp_data in pbar:
-        pbar.set_description(exp)
+def process_experiment(exp_data: dict[str, any]):
+    if "rest_state" in exp_data:
+        processing_rest_state(exp_data["rest_state"])
 
-        if "rest_state" in exp_data:
-            processing_rest_state(exp_data["rest_state"])
+    if "finger_tapping" in exp_data:
+        processing_finger_tapping(exp_data["finger_tapping"])
 
-        if "finger_tapping" in exp_data:
-            processing_finger_tapping(exp_data["finger_tapping"])
+    if "affective_individual_lion" in exp_data:
+        processing_affective_individual(exp_data["affective_individual_lion"])
 
-        if "affective_individual_lion" in exp_data:
-            processing_affective_individual(exp_data["affective_individual_lion"])
+    if "affective_individual_tiger" in exp_data:
+        processing_affective_individual(exp_data["affective_individual_tiger"])
 
-        if "affective_individual_tiger" in exp_data:
-            processing_affective_individual(exp_data["affective_individual_tiger"])
+    if "affective_individual_leopard" in exp_data:
+        processing_affective_individual(exp_data["affective_individual_leopard"])
 
-        if "affective_individual_leopard" in exp_data:
-            processing_affective_individual(exp_data["affective_individual_leopard"])
+    if "affective_team" in exp_data:
+        processing_affective_team(exp_data["affective_team"])
 
-        if "affective_team" in exp_data:
-            processing_affective_team(exp_data["affective_team"])
+    if "ping_pong_competitive_0" in exp_data:
+        processing_ping_pong_competitive(exp_data["ping_pong_competitive_0"], "ping_pong_competitive_0")
 
-        if "ping_pong_competitive_0" in exp_data:
-            processing_ping_pong_competitive(exp_data["ping_pong_competitive_0"], "ping_pong_competitive_0")
+    if "ping_pong_competitive_1" in exp_data:
+        processing_ping_pong_competitive(exp_data["ping_pong_competitive_1"], "ping_pong_competitive_1")
 
-        if "ping_pong_competitive_1" in exp_data:
-            processing_ping_pong_competitive(exp_data["ping_pong_competitive_1"], "ping_pong_competitive_1")
+    if "ping_pong_cooperative" in exp_data:
+        processing_ping_pong_cooperative(exp_data["ping_pong_cooperative"])
 
-        if "ping_pong_cooperative" in exp_data:
-            processing_ping_pong_cooperative(exp_data["ping_pong_cooperative"])
+    if "minecraft_hands_on_training" in exp_data:
+        processing_minecraft(exp_data["minecraft_hands_on_training"], "minecraft_hands_on_training")
 
-        if "minecraft_hands_on_training" in exp_data:
-            processing_minecraft(exp_data["minecraft_hands_on_training"], "minecraft_hands_on_training")
+    if "minecraft_saturn_a" in exp_data:
+        processing_minecraft(exp_data["minecraft_saturn_a"], "minecraft_saturn_a")
 
-        if "minecraft_saturn_a" in exp_data:
-            processing_minecraft(exp_data["minecraft_saturn_a"], "minecraft_saturn_a")
+    if "minecraft_saturn_b" in exp_data:
+        processing_minecraft(exp_data["minecraft_saturn_b"], "minecraft_saturn_b")
 
-        if "minecraft_saturn_b" in exp_data:
-            processing_minecraft(exp_data["minecraft_saturn_b"], "minecraft_saturn_b")
+
+def process_task_data(task_data: dict[str, any],
+                      num_processors: int = 1):
+    assert num_processors > 0
+
+    if num_processors > 1:
+        with Pool(processes=num_processors) as pool:
+            pool.map(process_experiment, task_data.values())
+    else:
+        pbar = tqdm(task_data.items())
+        for exp, exp_data in pbar:
+            pbar.set_description(exp)
+            process_experiment(exp_data)
