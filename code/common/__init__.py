@@ -1,3 +1,4 @@
+from .find_files import find_files
 from .iso_from_unix_time import iso_from_unix_time
 from .metadata_message_generator import metadata_message_generator
 from .read_csv_file import read_csv_file
@@ -13,5 +14,6 @@ __all__ = [
     'metadata_message_generator',
     'iso_from_unix_time',
     'write_df',
-    'read_metadata_file'
+    'read_metadata_file',
+    'find_files'
 ]
