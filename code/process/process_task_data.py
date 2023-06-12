@@ -180,7 +180,10 @@ def process_task_data(task_data: dict[str, any],
 
     if num_processors > 1:
         with Pool(processes=num_processors) as pool:
-            pool.map(process_experiment, task_data.values())
+            for _ in tqdm(pool.imap_unordered(process_experiment, task_data.values()),
+                          total=len(task_data),
+                          desc='Processing experiments'):
+                pass
     else:
         pbar = tqdm(task_data.items())
         for exp, exp_data in pbar:
