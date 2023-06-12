@@ -8,11 +8,11 @@ def prepare_rest_state(task_data_path: str,
                        physio_data_path: str,
                        experiment_info_path: str,
                        experiment: str,
-                       physio_type: str,
+                       physio_type_data: dict[str, dict[str, any]],
                        synchronization_frequency: float,
-                       output_dir: str,
-                       interpolation_method: callable) -> tuple[dict[str, any], bool, str]:
+                       output_dir: str) -> tuple[dict[str, any], bool, str]:
     output = {}
+    string_stream = StringIO()
 
     # Create a dictionary and add info path
     experiment_info_file = os.path.join(experiment_info_path, experiment + "_info.json")
@@ -36,24 +36,37 @@ def prepare_rest_state(task_data_path: str,
     output['task_csv_path'] = task_csv_file_path
 
     # Add physio data paths
-    string_stream = StringIO()
-    physio_data_exp_dir = os.path.join(physio_data_path, experiment)
-    physio_names_paths = {}
-    # For each computer
-    computer_names = ["lion", "tiger", "leopard"]
-    for computer_name in computer_names:
-        # Get physio file for that computer
-        physio_file = f"{computer_name}_{physio_type}_rest_state.csv"
-        physio_name_path = os.path.join(physio_data_exp_dir, physio_file)
-        if not check_file_exists(physio_name_path):
-            string_stream.write(f"{physio_name_path} does not exist\n")
+    physio_information = {}
+    for physio_type, physio_type_info in physio_type_data.items():
+        physio_data_exp_dir = os.path.join(physio_data_path, physio_type, experiment)
+        physio_names_paths = {}
+
+        # For each computer
+        computer_names = ["lion", "tiger", "leopard"]
+        for computer_name in computer_names:
+            # Get physio file for that computer
+            physio_file = f"{computer_name}_{physio_type}_rest_state.csv"
+            physio_name_path = os.path.join(physio_data_exp_dir, physio_file)
+            if not check_file_exists(physio_name_path):
+                string_stream.write(f"{physio_name_path} does not exist\n")
+                continue
+            physio_names_paths[computer_name] = physio_name_path
+
+        # If no physio data found, move to another physio type
+        if not physio_names_paths:
+            string_stream.write(f"No physio data found for {physio_type}\n")
             continue
-        physio_names_paths[computer_name] = physio_name_path
-    # If no physio data found, return failure
-    if len(physio_names_paths) == 0:
-        string_stream.write(f"No physio data found for {experiment}\n")
-        return {}, False, string_stream.getvalue()
-    output['physio_name_path'] = physio_names_paths
+
+        if physio_type not in physio_information:
+            physio_information[physio_type] = {}
+
+        physio_information[physio_type]['name_path'] = physio_names_paths
+        physio_information[physio_type].update(physio_type_info)
+
+    if not physio_information:
+        string_stream.write("No physio data found\n")
+
+    output['physio'] = physio_information
 
     # Add synchronization frequency
     output['frequency'] = synchronization_frequency
@@ -64,9 +77,6 @@ def prepare_rest_state(task_data_path: str,
     # Add output log path
     output_log_dir = os.path.join(output_dir, "report")
     output['output_log_dir'] = output_log_dir
-
-    # Add interpolation method
-    output['interpolation_method'] = interpolation_method
 
     string_stream.write("Rest state data prepared.\n")
     return output, True, string_stream.getvalue()

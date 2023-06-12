@@ -1,43 +1,35 @@
-import json
 import os
 from io import StringIO
 
 from dateutil.parser import parse
 
+from common import metadata_message_generator
 from .utils import check_file_exists
 
 
-def _metadata_message_generator(metadata_file_path: str):
-    with open(metadata_file_path, 'r') as metadata_file:
-        for line in metadata_file:
-            yield json.loads(line)
-
-
 def _get_mission_type(metadata_file_path: str) -> str:
-    messages = _metadata_message_generator(metadata_file_path)
+    messages = metadata_message_generator(metadata_file_path)
 
     trial_topic = "trial"
 
     # parse messages
     for message in messages:
         # Find trial message
-        if "topic" in message and message["topic"] == trial_topic and message["msg"][
-            "sub_type"] == "start":
+        if "topic" in message and message["topic"] == trial_topic and message["msg"]["sub_type"] == "start":
             return message["data"]["experiment_mission"]
 
     return ""
 
 
 def _get_trial_time(metadata_file_path: str) -> str:
-    messages = _metadata_message_generator(metadata_file_path)
+    messages = metadata_message_generator(metadata_file_path)
 
     trial_topic = "trial"
 
     # parse messages
     for message in messages:
         # Find trial message
-        if "topic" in message and message["topic"] == trial_topic and message["msg"][
-            "sub_type"] == "start":
+        if "topic" in message and message["topic"] == trial_topic and message["msg"]["sub_type"] == "start":
             return message["header"]["timestamp"]
 
     return ""
@@ -102,10 +94,9 @@ def prepare_minecraft(task_data_path: str,
                       physio_data_path: str,
                       experiment_info_path: str,
                       experiment: str,
-                      physio_type: str,
+                      physio_type_data: dict[str, dict[str, any]],
                       synchronization_frequency: float,
-                      output_dir: str,
-                      interpolation_method: callable) -> tuple[dict[str, any], bool, str]:
+                      output_dir: str) -> tuple[dict[str, any], bool, str]:
     output = {}
     string_stream = StringIO()
 
@@ -133,14 +124,29 @@ def prepare_minecraft(task_data_path: str,
     for mission, path_to_metadata in minecraft_missions.items():
         # Get physio data files
         physio_data = {}
-        for animal in ["lion", "tiger", "leopard"]:
-            physio_file_path = os.path.join(physio_data_path, experiment,
-                                            f"{animal}_{physio_type}_{mission}.csv")
-            if not check_file_exists(physio_file_path):
-                string_stream.write(f"Cannot find {physio_file_path}\n")
+        for physio_type, physio_type_info in physio_type_data.items():
+            physio_name_path = {}
+
+            for computer in ["lion", "tiger", "leopard"]:
+                physio_file_path = os.path.join(physio_data_path,
+                                                physio_type,
+                                                experiment,
+                                                f"{computer}_{physio_type}_{mission}.csv")
+                if not check_file_exists(physio_file_path):
+                    string_stream.write(f"Cannot find {physio_file_path}\n")
+                    continue
+
+                physio_name_path[computer] = physio_file_path
+
+            if not physio_name_path:
+                string_stream.write(f"Cannot find physio data for {physio_type} in {mission}\n")
                 continue
 
-            physio_data[animal] = physio_file_path
+            if physio_type not in physio_data:
+                physio_data[physio_type] = {}
+
+            physio_data[physio_type]["name_path"] = physio_name_path
+            physio_data[physio_type].update(physio_type_info)
 
         if not physio_data:
             string_stream.write(f"Cannot find physio data for {mission}\n")
@@ -149,11 +155,10 @@ def prepare_minecraft(task_data_path: str,
         mission_dict = {
             "info": experiment_info_file,
             "task_metadata_path": path_to_metadata,
-            "physio_name_path": physio_data,
+            "physio": physio_data,
             "frequency": synchronization_frequency,
             "output_dir": output_dir,
-            "output_log_dir": os.path.join(output_dir, "report"),
-            "interpolation_method": interpolation_method
+            "output_log_dir": os.path.join(output_dir, "report")
         }
 
         # Add the current mission to the output dictionary
