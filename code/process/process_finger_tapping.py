@@ -81,4 +81,4 @@ def process_finger_tapping(exp_info_path: str,
 
     physio_task = physio_task.set_index('unix_time')
 
-    return physio_task, True, "Processed finger tapping data"
+    return physio_task, True, "[SUCCESS] Processed finger tapping data\n"

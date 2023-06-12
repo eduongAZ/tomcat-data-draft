@@ -130,6 +130,6 @@ def prepare_task_data(task_data_path: str,
 
         string_stream.write('\n')
 
-    report_writer('preparing_preparation_report.txt', string_stream.getvalue(), to_terminal=verbose)
+    report_writer('data_preparation_report.txt', string_stream.getvalue(), to_terminal=verbose)
 
     return experiments_tasks_data

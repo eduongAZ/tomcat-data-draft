@@ -46,7 +46,7 @@ def process_minecraft(exp_info_path: str,
     # Read task data
     task_df = read_metadata_file(task_metadata_path)
     if len(task_df) == 0:
-        return None, False, 'Minecraft task data is empty'
+        return None, False, '[FAILURE] Minecraft task data is empty\n'
 
     # Detect if there is a column called lsl_timestamp. If so, remove the existing time column
     # and rename the lsl_timestamp column to time
@@ -80,4 +80,4 @@ def process_minecraft(exp_info_path: str,
 
     physio_task = physio_task.set_index('unix_time')
 
-    return physio_task, True, "Processed minecraft data"
+    return physio_task, True, "[SUCCESS] Processed minecraft data\n"

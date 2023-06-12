@@ -94,4 +94,4 @@ def process_affective_individual(exp_info_path: str,
 
     physio_task = physio_task.set_index('unix_time')
 
-    return physio_task, True, "Processed affective individual data"
+    return physio_task, True, "[SUCCESS] Processed affective individual data\n"

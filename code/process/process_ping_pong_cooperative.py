@@ -78,4 +78,4 @@ def process_ping_pong_cooperative(exp_info_path: str,
 
     physio_task = physio_task.set_index('unix_time')
 
-    return physio_task, True, "Processed ping pong cooperative data"
+    return physio_task, True, "[SUCCESS] Processed ping pong cooperative data\n"

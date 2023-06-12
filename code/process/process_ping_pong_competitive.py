@@ -78,4 +78,4 @@ def process_ping_pong_competitive(exp_info_path: str,
 
     physio_task = physio_task.set_index('unix_time')
 
-    return physio_task, True, "Processed ping pong competitive data"
+    return physio_task, True, "[SUCCESS] Processed ping pong competitive data\n"

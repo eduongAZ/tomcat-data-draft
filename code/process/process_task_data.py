@@ -2,7 +2,7 @@ import os
 
 from tqdm import tqdm
 
-from common import write_df
+from common import write_df, ReportWriter
 from .process_affective_individual import process_affective_individual
 from .process_affective_team import process_affective_team
 from .process_finger_tapping import process_finger_tapping
@@ -19,6 +19,11 @@ def processing_rest_state(task_data: dict[str, any]):
         task_data['physio'],
         task_data['frequency']
     )
+
+    os.makedirs(task_data['output_log_dir'], exist_ok=True)
+    report_writer = ReportWriter(task_data['output_log_dir'])
+    report_writer('rest_state_processing_report.txt', message, to_terminal=False)
+
     if status:
         os.makedirs(task_data['output_dir'], exist_ok=True)
         write_df(task_df, os.path.join(task_data['output_dir'], f'rest_state_physio_task.csv'))
@@ -31,6 +36,11 @@ def processing_finger_tapping(task_data: dict[str, any]):
         task_data['physio'],
         task_data['frequency']
     )
+
+    os.makedirs(task_data['output_log_dir'], exist_ok=True)
+    report_writer = ReportWriter(task_data['output_log_dir'])
+    report_writer('finger_tapping_processing_report.txt', message, to_terminal=False)
+
     if status:
         os.makedirs(task_data['output_dir'], exist_ok=True)
         write_df(task_df, os.path.join(task_data['output_dir'], f'finger_tapping_physio_task.csv'))
@@ -46,6 +56,11 @@ def processing_affective_individual(task_data: dict[str, any]):
         computer_name,
         task_data['participant_id'],
     )
+
+    os.makedirs(task_data['output_log_dir'], exist_ok=True)
+    report_writer = ReportWriter(task_data['output_log_dir'])
+    report_writer(f'{computer_name}_affective_individual_processing_report.txt', message, to_terminal=False)
+
     if status:
         os.makedirs(task_data['output_dir'], exist_ok=True)
         write_df(task_df,
@@ -59,6 +74,11 @@ def processing_affective_team(task_data: dict[str, any]):
         task_data['physio'],
         task_data['frequency']
     )
+
+    os.makedirs(task_data['output_log_dir'], exist_ok=True)
+    report_writer = ReportWriter(task_data['output_log_dir'])
+    report_writer('affective_team_processing_report.txt', message, to_terminal=False)
+
     if status:
         os.makedirs(task_data['output_dir'], exist_ok=True)
         write_df(task_df, os.path.join(task_data['output_dir'], f'affective_team_physio_task.csv'))
@@ -71,6 +91,11 @@ def processing_ping_pong_competitive(task_data: dict[str, any], match_name: str)
         task_data['physio'],
         task_data['frequency']
     )
+
+    os.makedirs(task_data['output_log_dir'], exist_ok=True)
+    report_writer = ReportWriter(task_data['output_log_dir'])
+    report_writer(f'{match_name}_processing_report.txt', message, to_terminal=False)
+
     if status:
         os.makedirs(task_data['output_dir'], exist_ok=True)
         write_df(task_df, os.path.join(task_data['output_dir'], f'{match_name}_physio_task.csv'))
@@ -83,6 +108,11 @@ def processing_ping_pong_cooperative(task_data: dict[str, any]):
         task_data['physio'],
         task_data['frequency']
     )
+
+    os.makedirs(task_data['output_log_dir'], exist_ok=True)
+    report_writer = ReportWriter(task_data['output_log_dir'])
+    report_writer('ping_pong_cooperative_processing_report.txt', message, to_terminal=False)
+
     if status:
         os.makedirs(task_data['output_dir'], exist_ok=True)
         write_df(task_df, os.path.join(task_data['output_dir'], f'ping_pong_cooperative_physio_task.csv'))
@@ -95,6 +125,11 @@ def processing_minecraft(task_data: dict[str, any], mission_name: str):
         task_data['physio'],
         task_data['frequency']
     )
+
+    os.makedirs(task_data['output_log_dir'], exist_ok=True)
+    report_writer = ReportWriter(task_data['output_log_dir'])
+    report_writer(f'{mission_name}_processing_report.txt', message, to_terminal=False)
+
     if status:
         os.makedirs(task_data['output_dir'], exist_ok=True)
         write_df(task_df, os.path.join(task_data['output_dir'], f'{mission_name}_physio_task.csv'))
