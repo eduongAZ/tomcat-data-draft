@@ -8,7 +8,7 @@ from process import process_task_data
 
 if __name__ == "__main__":
     synchronization_frequency = 500.0
-    report_writer = ReportWriter(os.path.join(output_dir, 'report'))
+    report_writer = ReportWriter(os.path.join(output_dir, 'eeg,' 'report'))
     physio_type_data = {
         "eeg": {
             "interpolation_method": linear_interpolation
