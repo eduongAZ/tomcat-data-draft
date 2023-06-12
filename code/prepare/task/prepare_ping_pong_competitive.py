@@ -91,7 +91,7 @@ def prepare_ping_pong_competitive(task_data_path: str,
         if not physio_data:
             string_stream.write("No physio data found for match " + match_num + "\n")
 
-        experiment_dict[match_num] = {
+        experiment_dict[f"ping_pong_competitive_{match_num}"] = {
             "info": experiment_info_file,
             "task_csv_path": task,
             "physio": physio_data,

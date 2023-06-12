@@ -62,7 +62,7 @@ def prepare_affective_individual(task_data_path: str,
             "output_log_dir": os.path.join(output_dir, "report")
         }
 
-        output[computer_name] = participant_dict
+        output[f"affective_individual_{computer_name}"] = participant_dict
 
     string_stream.write("Affective individual data prepared.\n")
     return output, True, string_stream.getvalue()

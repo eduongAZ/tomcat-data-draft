@@ -66,7 +66,7 @@ def prepare_task_data(task_data_path: str,
         )
         string_stream.write(message)
         if status:
-            experiments_tasks_data[experiment]['affective_individual'] = task_data
+            experiments_tasks_data[experiment].update(task_data)
 
         # Affective team
         string_stream.write('(Preparing affective team)\n')
@@ -96,7 +96,7 @@ def prepare_task_data(task_data_path: str,
         )
         string_stream.write(message)
         if status:
-            experiments_tasks_data[experiment]['ping_pong_competitive'] = task_data
+            experiments_tasks_data[experiment].update(task_data)
 
         # Ping pong cooperative
         string_stream.write('(Preparing ping pong cooperative)\n')
@@ -126,7 +126,7 @@ def prepare_task_data(task_data_path: str,
         )
         string_stream.write(message)
         if status:
-            experiments_tasks_data[experiment]['minecraft'] = task_data
+            experiments_tasks_data[experiment].update(task_data)
 
         string_stream.write('\n')
 
