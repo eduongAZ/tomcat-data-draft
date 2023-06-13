@@ -25,6 +25,7 @@ def prepare_task_data(task_data_path: str,
     string_stream.write(f"Extracting experiment info from {experiment_info_dir_name}\n")
     output_dir_name = os.path.basename(output_dir)
     string_stream.write(f"Writing output to {output_dir_name}\n")
+    string_stream.write(f"Synchronization frequency {synchronization_frequency}Hz\n")
     string_stream.write("\n")
 
     experiments_tasks_data = {}
