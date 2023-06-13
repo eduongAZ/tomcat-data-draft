@@ -16,8 +16,19 @@ def prepare_task_data(task_data_path: str,
                       verbose: bool = False) -> dict[str, dict[str, dict[str, any]]]:
     string_stream = StringIO()
 
-    experiments_tasks_data = {}
+    # Report information about the sources of the task data to be processed
+    task_data_dir_name = os.path.basename(task_data_path)
+    string_stream.write(f"Extracting task data from {task_data_dir_name}\n")
+    physio_data_dir_name = os.path.basename(physio_data_path)
+    string_stream.write(f"Extracting physio data from {physio_data_dir_name}\n")
+    experiment_info_dir_name = os.path.basename(experiment_info_path)
+    string_stream.write(f"Extracting experiment info from {experiment_info_dir_name}\n")
+    output_dir_name = os.path.basename(output_dir)
+    string_stream.write(f"Writing output to {output_dir_name}\n")
+    string_stream.write(f"Synchronization frequency {synchronization_frequency}Hz\n")
+    string_stream.write("\n")
 
+    experiments_tasks_data = {}
     for experiment in experiments:
         experiments_tasks_data[experiment] = {}
 
