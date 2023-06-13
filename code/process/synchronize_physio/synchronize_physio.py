@@ -4,6 +4,28 @@ from common import read_csv_file
 from .utils import generate_time_series
 
 
+def _get_entries_before_each_time_series(df: pd.DataFrame,
+                                         sync_df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Get the entries before each time series.
+    @param df: dataframe of physio data
+    @param sync_df: dataframe with the target time series
+    @return: dataframe of entries before each time series
+    """
+    return pd.merge_asof(sync_df, df, on='unix_time', direction='backward')
+
+
+def _get_entries_after_each_time_series(df: pd.DataFrame,
+                                        sync_df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Get the entries after each time series.
+    @param df: dataframe of physio data
+    @param sync_df: dataframe with the target time series
+    @return: dataframe of entries after each time series
+    """
+    return pd.merge_asof(sync_df, df, on='unix_time', direction='forward')
+
+
 def _sync_data_to_time_series(df: pd.DataFrame,
                               time_series: list[float],
                               interpolation_method: callable) -> pd.DataFrame:
@@ -14,25 +36,26 @@ def _sync_data_to_time_series(df: pd.DataFrame,
     @param interpolation_method: interpolation method to use
     @return: dataframe of physio data synchronized to time series
     """
+    # Create a dataframe for synchronized data
     sync_df = pd.DataFrame(time_series, columns=['unix_time'])
 
+    # Remember the original unix_time column before removing it later
     df['original_unix_time'] = df['unix_time'].copy()
 
-    # merge_asof to find the nearest entry at or before each time
-    df_before = pd.merge_asof(sync_df, df, on='unix_time', direction='backward')
+    # Find the nearest entry at or before each time
+    df_before = _get_entries_before_each_time_series(df, sync_df)
 
-    # merge_asof to find the nearest entry at or after each time
-    df_after = pd.merge_asof(sync_df, df, on='unix_time', direction='forward')
+    # Find the nearest entry at or after each time
+    df_after = _get_entries_after_each_time_series(df, sync_df)
 
-    # Drop column Unnamed: 0 if it exists
-    if 'Unnamed: 0' in df.columns:
-        df = df.drop(columns=['Unnamed: 0'])
+    # Drop old, unwanted columns from the dataframes
+    columns_to_drop = ['Unnamed: 0', 'human_readable_time', 'unix_time', 'event_type', 'original_unix_time']
+    columns_to_drop = [col for col in columns_to_drop if col in df.columns]
+    if columns_to_drop:
+        df = df.drop(columns=columns_to_drop)
 
-    columns = df.columns.drop(['human_readable_time',
-                               'unix_time',
-                               'event_type',
-                               'original_unix_time'])
-    for column in columns:
+    # Interpolate each column
+    for column in df.columns:
         sync_df[column] = interpolation_method(
             df_before['original_unix_time'],
             df_after['original_unix_time'],
@@ -41,6 +64,7 @@ def _sync_data_to_time_series(df: pd.DataFrame,
             df_after[column]
         )
 
+    # Set the index to unix_time
     sync_df = sync_df.set_index('unix_time')
 
     return sync_df
@@ -57,26 +81,17 @@ def synchronize_physio(physio_data: dict[str, any],
     if not physio_data:
         return pd.DataFrame(index=time_series).rename_axis('unix_time')
 
+    # Synchronize each physio dataframe to the time series
     combined_df = None
-
     for physio_type, physio_type_data in physio_data.items():
         interpolation_method = physio_type_data['interpolation_method']
 
+        # Synchronize each physio dataframe to the time series
         for computer_name, physio_path in physio_type_data["name_path"].items():
-            # Determine the delimiter
-            with open(physio_path, 'r') as f:
-                first_line = f.readline()
-            if '\t' in first_line:
-                delimiter = '\t'
-            elif ',' in first_line:
-                delimiter = ','
-            elif ';' in first_line:
-                delimiter = ';'
-            else:
-                raise ValueError('Delimiter could not be detected')
+            # Read the physio data from the csv file
+            physio_df = read_csv_file(physio_path, delimiter=';')
 
-            physio_df = read_csv_file(physio_path, delimiter=delimiter)
-
+            # Synchronize the data to the time series
             synchronized_physio_df = _sync_data_to_time_series(physio_df, time_series, interpolation_method)
 
             # Prefix the column names with the computer name
@@ -90,6 +105,7 @@ def synchronize_physio(physio_data: dict[str, any],
             else:
                 combined_df = pd.concat([combined_df, synchronized_physio_df], axis=1)
 
+            # Set the index name to unix_time
             combined_df.index.name = 'unix_time'
 
     return combined_df

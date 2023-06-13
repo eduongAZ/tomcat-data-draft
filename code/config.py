@@ -1,7 +1,7 @@
 task_data_path = '/space/eduong/exp_tasks'
-physio_data_path = '/space/rchamplin/Neurips/rerun_2023_06_11'
+physio_data_path = '/space/rchamplin/Neurips/rerun_nonfiltered_2023_06_11'
 experiment_info_path = '/space/eduong/exp_info'
-output_dir = '/tomcat/data/derived/drafts/draft_2023_06_12_13'
+output_dir = '/tomcat/data/derived/unfiltered/unfiltered_2023_06_12_19'
 
 # task_data_path = '/home/eric/Documents/projects/tomcat-data-draft/data/raw/tasks'
 # physio_data_path = '/home/eric/Documents/projects/tomcat-data-draft/data/raw/physio'
