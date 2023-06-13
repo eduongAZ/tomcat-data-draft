@@ -1,5 +1,5 @@
 # Use the official Jupyter Notebook Python 3.x image as the base image
-FROM jupyter/base-notebook:python-3.10
+FROM jupyter/base-notebook:python-3.11
 
 # Set working directory
 WORKDIR /code
