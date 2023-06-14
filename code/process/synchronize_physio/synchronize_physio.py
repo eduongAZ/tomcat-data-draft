@@ -92,23 +92,14 @@ def _sync_data_to_time_series(df: pd.DataFrame,
             raw.resample(downsample_frequency)
             # Compute downsample ratio
             downsample_ratio = int(desired_frequency / downsample_frequency)
-            middle_point = downsample_ratio // 2  # find the middle of the group
-
-            # if downsample_ratio is even, the middle is between two elements.
-            # in this case, we choose the one after the exact middle.
-            if downsample_ratio % 2 == 0:
-                middle_point += 1
-
-            # ensure the slice does not exceed the array's length
-            if middle_point >= len(time_series_np):
-                middle_point = len(time_series_np) - 1
-            downsample_unix_time = time_series_np[middle_point::downsample_ratio]
+            downsample_unix_time = time_series_np[::downsample_ratio]
 
         sync_df = raw.to_data_frame()
+        sync_df.drop(columns=['time'], inplace=True)
 
         if downsample_unix_time is not None:
-            if len(downsample_unix_time) < len(sync_df):
-                downsample_unix_time = np.append(downsample_unix_time, time_series_np[-1])
+            if len(downsample_unix_time) > len(sync_df):
+                downsample_unix_time = downsample_unix_time[:-1]
             sync_df['unix_time'] = downsample_unix_time
 
     # Set the index to unix_time
