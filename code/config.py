@@ -1,9 +1,9 @@
 # The following configurations are for synchronizing physio data
 
-task_data_path = '/home/eric/Documents/projects/tomcat-data-draft/data/raw/tasks'
-physio_data_path = '/home/eric/Documents/projects/tomcat-data-draft/data/raw_from_gauss_old/physio'
-experiment_info_path = '/home/eric/Documents/projects/tomcat-data-draft/data/raw/info'
-output_dir = '/home/eric/Documents/projects/tomcat-data-draft/data/derived'
+task_data_path = '/space/eduong/exp_tasks'
+physio_data_path = '/space/rchamplin/Neurips/rerun_2023_06_11'
+experiment_info_path = '/space/eduong/exp_info'
+output_dir = '/tomcat/data/derived/drafts/draft_2023_06_14_07'
 
 experiments = [
     "exp_2022_09_30_10",

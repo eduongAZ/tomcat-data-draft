@@ -75,6 +75,11 @@ def _sync_data_to_time_series(df: pd.DataFrame,
         )
 
     if filter_method is not None or downsample_frequency is not None:
+        # First, use forward-fill to fill NaN values
+        sync_df.fillna(method='ffill', inplace=True)
+        # Then, use backward-fill to fill any remaining NaN values
+        sync_df.fillna(method='bfill', inplace=True)
+
         channel_names = sync_df.columns.tolist()
         channel_names.remove('unix_time')
         info = mne.create_info(channel_names, sfreq=desired_frequency, ch_types=physio_type)
@@ -101,6 +106,8 @@ def _sync_data_to_time_series(df: pd.DataFrame,
             if len(downsample_unix_time) > len(sync_df):
                 downsample_unix_time = downsample_unix_time[:-1]
             sync_df['unix_time'] = downsample_unix_time
+        else:
+            sync_df['unix_time'] = time_series_np
 
     # Set the index to unix_time
     sync_df = sync_df.set_index('unix_time')
