@@ -1,4 +1,5 @@
 import os
+import mne
 
 from common import ReportWriter
 from config import *
@@ -7,14 +8,21 @@ from prepare import prepare_task_data
 from process import process_task_data
 
 if __name__ == "__main__":
-    synchronization_frequency = 20.0
-    physio_type_output_dir = os.path.join(output_dir, 'nirs')
+    mne.set_log_level('ERROR')  # Set the logging level to 'ERROR'
+
+    synchronization_frequency = 1200.0
+    downsample_frequency = 120.0
+    physio_type_output_dir = os.path.join(output_dir, 'eeg_120hz')
     os.makedirs(physio_type_output_dir, exist_ok=True)
 
     report_writer = ReportWriter(os.path.join(physio_type_output_dir, 'report'))
     physio_type_data = {
-        "nirs": {
-            "interpolation_method": linear_interpolation
+        "eeg": {
+            "interpolation_method": linear_interpolation,
+            "filter": {
+                "type": "lowpass",
+                "data": 55.0
+            }
         }
     }
 
@@ -31,4 +39,4 @@ if __name__ == "__main__":
         verbose=False
     )
 
-    process_task_data(experiments_tasks_data, num_processors=24)
+    process_task_data(experiments_tasks_data, num_processors=1, downsample_frequency=downsample_frequency)

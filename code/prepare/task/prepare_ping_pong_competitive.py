@@ -12,7 +12,8 @@ def prepare_ping_pong_competitive(task_data_path: str,
                                   experiment: str,
                                   physio_type_data: dict[str, dict[str, any]],
                                   synchronization_frequency: float,
-                                  output_dir: str) -> tuple[dict[str, any], bool, str]:
+                                  output_dir: str,
+                                  downsample_frequency: float | None = None) -> tuple[dict[str, any], bool, str]:
     experiment_dict = {}
 
     experiment_info_file = os.path.join(experiment_info_path, experiment + "_info.json")
@@ -96,6 +97,7 @@ def prepare_ping_pong_competitive(task_data_path: str,
             "physio": physio_data,
             "teams": metadata,
             "frequency": synchronization_frequency,
+            "downsample_frequency": downsample_frequency,
             "output_dir": output_dir,
             "output_log_dir": os.path.join(output_dir, "report")
         }
