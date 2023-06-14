@@ -42,7 +42,8 @@ def _combine_physio_task(task_df: pd.DataFrame,
 def process_ping_pong_cooperative(exp_info_path: str,
                                   task_csv_path: str,
                                   physio_data: dict[str, any],
-                                  frequency: float) -> tuple[any, bool, str]:
+                                  frequency: float,
+                                  downsample_frequency: float | None = None) -> tuple[any, bool, str]:
     # Read task data
     task_df = read_csv_file(task_csv_path, delimiter=';')
 
@@ -54,7 +55,7 @@ def process_ping_pong_cooperative(exp_info_path: str,
 
     start_time, end_time = _get_start_end_time(task_df)
 
-    combined_physio = synchronize_physio(physio_data, start_time, end_time, frequency)
+    combined_physio = synchronize_physio(physio_data, start_time, end_time, frequency, downsample_frequency)
 
     combined_physio = combined_physio.reset_index()
 

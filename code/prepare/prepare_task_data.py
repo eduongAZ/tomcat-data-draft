@@ -13,6 +13,7 @@ def prepare_task_data(task_data_path: str,
                       report_writer: ReportWriter,
                       physio_type_data: dict[str, dict[str, any]],
                       experiments: list[str],
+                      downsample_frequency: float | None = None,
                       verbose: bool = False) -> dict[str, dict[str, dict[str, any]]]:
     string_stream = StringIO()
 
@@ -43,7 +44,8 @@ def prepare_task_data(task_data_path: str,
             experiment,
             physio_type_data,
             synchronization_frequency,
-            os.path.join(output_dir, experiment)
+            os.path.join(output_dir, experiment),
+            downsample_frequency=downsample_frequency
         )
         string_stream.write(message)
         if status:
@@ -58,7 +60,8 @@ def prepare_task_data(task_data_path: str,
             experiment,
             physio_type_data,
             synchronization_frequency,
-            os.path.join(output_dir, experiment)
+            os.path.join(output_dir, experiment),
+            downsample_frequency=downsample_frequency
         )
         string_stream.write(message)
         if status:
@@ -73,7 +76,8 @@ def prepare_task_data(task_data_path: str,
             experiment,
             physio_type_data,
             synchronization_frequency,
-            os.path.join(output_dir, experiment)
+            os.path.join(output_dir, experiment),
+            downsample_frequency=downsample_frequency
         )
         string_stream.write(message)
         if status:
@@ -88,7 +92,8 @@ def prepare_task_data(task_data_path: str,
             experiment,
             physio_type_data,
             synchronization_frequency,
-            os.path.join(output_dir, experiment)
+            os.path.join(output_dir, experiment),
+            downsample_frequency=downsample_frequency
         )
         string_stream.write(message)
         if status:
@@ -103,7 +108,8 @@ def prepare_task_data(task_data_path: str,
             experiment,
             physio_type_data,
             synchronization_frequency,
-            os.path.join(output_dir, experiment)
+            os.path.join(output_dir, experiment),
+            downsample_frequency=downsample_frequency
         )
         string_stream.write(message)
         if status:
@@ -118,7 +124,8 @@ def prepare_task_data(task_data_path: str,
             experiment,
             physio_type_data,
             synchronization_frequency,
-            os.path.join(output_dir, experiment)
+            os.path.join(output_dir, experiment),
+            downsample_frequency=downsample_frequency
         )
         string_stream.write(message)
         if status:
@@ -133,7 +140,8 @@ def prepare_task_data(task_data_path: str,
             experiment,
             physio_type_data,
             synchronization_frequency,
-            os.path.join(output_dir, experiment)
+            os.path.join(output_dir, experiment),
+            downsample_frequency=downsample_frequency
         )
         string_stream.write(message)
         if status:

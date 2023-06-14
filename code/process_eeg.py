@@ -7,7 +7,7 @@ from prepare import prepare_task_data
 from process import process_task_data
 
 if __name__ == "__main__":
-    synchronization_frequency = 2000.0
+    synchronization_frequency = 1000.0
     physio_type_output_dir = os.path.join(output_dir, 'eeg')
     os.makedirs(physio_type_output_dir, exist_ok=True)
 

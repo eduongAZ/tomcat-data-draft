@@ -96,7 +96,8 @@ def prepare_minecraft(task_data_path: str,
                       experiment: str,
                       physio_type_data: dict[str, dict[str, any]],
                       synchronization_frequency: float,
-                      output_dir: str) -> tuple[dict[str, any], bool, str]:
+                      output_dir: str,
+                      downsample_frequency: float | None = None) -> tuple[dict[str, any], bool, str]:
     output = {}
     string_stream = StringIO()
 
@@ -149,13 +150,13 @@ def prepare_minecraft(task_data_path: str,
 
         if not physio_data:
             string_stream.write(f"Cannot find physio data for {mission}\n")
-            continue
 
         mission_dict = {
             "info": experiment_info_file,
             "task_metadata_path": path_to_metadata,
             "physio": physio_data,
             "frequency": synchronization_frequency,
+            "downsample_frequency": downsample_frequency,
             "output_dir": output_dir,
             "output_log_dir": os.path.join(output_dir, "report")
         }

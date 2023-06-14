@@ -10,7 +10,8 @@ def prepare_affective_team(task_data_path: str,
                            experiment: str,
                            physio_type_data: dict[str, dict[str, any]],
                            synchronization_frequency: float,
-                           output_dir: str) -> tuple[dict[str, any], bool, str]:
+                           output_dir: str,
+                           downsample_frequency: float | None = None) -> tuple[dict[str, any], bool, str]:
     output = {}
     string_stream = StringIO()
 
@@ -72,6 +73,9 @@ def prepare_affective_team(task_data_path: str,
 
     # Add synchronization frequency
     output['frequency'] = synchronization_frequency
+
+    if downsample_frequency is not None:
+        output['downsample_frequency'] = downsample_frequency
 
     # Add output directory
     output['output_dir'] = output_dir

@@ -60,7 +60,8 @@ def process_affective_individual(exp_info_path: str,
                                  physio_data: dict[str, any],
                                  frequency: float,
                                  computer_name: str,
-                                 participant_id: str) -> tuple[any, bool, str]:
+                                 participant_id: str,
+                                 downsample_frequency: float | None = None) -> tuple[any, bool, str]:
     # Read task data
     task_df = read_csv_file(task_csv_path, delimiter=';')
 
@@ -72,7 +73,7 @@ def process_affective_individual(exp_info_path: str,
 
     start_time, end_time = _get_start_end_time(task_df)
 
-    combined_physio = synchronize_physio(physio_data, start_time, end_time, frequency)
+    combined_physio = synchronize_physio(physio_data, start_time, end_time, frequency, downsample_frequency)
 
     combined_physio = combined_physio.reset_index()
 
