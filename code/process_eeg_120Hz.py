@@ -39,4 +39,4 @@ if __name__ == "__main__":
         verbose=False
     )
 
-    process_task_data(experiments_tasks_data, num_processors=1, downsample_frequency=downsample_frequency)
+    process_task_data(experiments_tasks_data, num_processors=24, downsample_frequency=downsample_frequency)
