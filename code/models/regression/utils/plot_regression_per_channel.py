@@ -4,7 +4,8 @@ import matplotlib.pyplot as plt
 def plot_regression_per_channel(correlation_per_channel: dict[str, list[any]],
                                 scores: list[any],
                                 linear_regressor_per_channel: dict[str, any],
-                                output_dir: str | None = None):
+                                output_dir: str | None = None,
+                                show_images: bool = True):
     # Ensure valid input
     assert len(correlation_per_channel) > 0
     for channel in correlation_per_channel.keys():
@@ -26,4 +27,7 @@ def plot_regression_per_channel(correlation_per_channel: dict[str, list[any]],
         if output_dir is not None:
             plt.savefig(f"{output_dir}/regression_{channel}.png")
 
-        plt.show()
+        if show_images:
+            plt.show()
+        else:
+            plt.close()
