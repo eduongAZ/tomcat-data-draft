@@ -52,6 +52,12 @@ def _combine_physio_task(task_df: pd.DataFrame,
     # Restore the original 'unix_time' column
     physio_df['unix_time'] = original_unix_time
 
+    # Remove all rows after the last task data entry
+    if 'final_submission' in physio_df['task_event_type'].values:
+        final_submission_index = \
+            physio_df[physio_df['task_event_type'] == 'final_submission'].index[0]
+        physio_df = physio_df.loc[:final_submission_index]
+
     return physio_df
 
 
@@ -71,7 +77,11 @@ def process_affective_team(exp_info_path: str,
 
     start_time, end_time = _get_start_end_time(task_df)
 
-    combined_physio = synchronize_physio(physio_data, start_time, end_time, frequency, downsample_frequency)
+    combined_physio = synchronize_physio(physio_data, 
+                                         start_time, 
+                                         end_time, 
+                                         frequency,
+                                         downsample_frequency)
 
     combined_physio = combined_physio.reset_index()
 

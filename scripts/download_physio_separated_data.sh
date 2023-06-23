@@ -2,8 +2,8 @@
 
 # SSH connection details
 remote_host="gauss"
-data_location="/space/rchamplin/Neurips/new_pipeline_2023_06_05"
-data_output_dir="../data/raw_from_gauss_old/physio"
+data_location="/space/rchamplin/Neurips/rerun_filtered_2023_06_22"
+data_output_dir="../data/raw/physio"
 
 # More details on folders to sync and SSH conection
 source ../.env
@@ -16,5 +16,5 @@ for folder in "${FOLDERS[@]}"; do
     mkdir -p "$destination"
 
     echo "Syncing $source to $destination"
-    rsync -avP --include="*_eeg_*" --exclude="*" "$source" "$destination"
+    rsync -avP --include="*_nirs_*" --exclude="*" "$source" "$destination"
 done
